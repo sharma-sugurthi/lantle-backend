@@ -1,9 +1,10 @@
 import PgBoss from 'pg-boss';
 import { config } from './config.js';
 import { q } from './db.js';
-import { sendMail, templates, type Mail } from './lib/email.js';
+import { apiBase, sendMail, templates, type Mail } from './lib/email.js';
 import { fmtDate } from './lib/text.js';
 import { grantFeatured, isFeatured, revokeFeatured, type ToolRow } from './lib/tools.js';
+import type { PostRow } from './lib/posts.js';
 
 const isLocal = /localhost|127\.0\.0\.1/.test(config.databaseUrl);
 
@@ -42,19 +43,15 @@ export async function startQueue(): Promise<void> {
   await boss.work<Mail>(Q.email, async ([job]) => {
     await sendMail(job.data);
   });
-
   await boss.work<{ reason: string }>(Q.deploy, async ([job]) => {
     await runDeploy(job.data.reason);
   });
-
   await boss.work<{ eventId: string }>(Q.payments, async ([job]) => {
     await processPaymentEvent(job.data.eventId);
   });
-
   await boss.work(Q.reminders, async () => {
     await sendFeaturedReminders();
   });
-
   await boss.work<any>(Q.dead, async ([job]) => {
     const d = job.data ?? {};
     await sendMail(templates.ownerJobFailed({ queue: String(d.queue ?? job.name), error: String(d.error ?? 'unknown'), data: d }));
@@ -78,11 +75,15 @@ async function runDeploy(reason: string): Promise<void> {
   if (!res.ok) throw new Error(`Deploy hook returned ${res.status}`);
   console.log(`[deploy] triggered (${reason})`);
   // Tell submitters their page is live once the build has had time to finish.
-  const { rows } = await q<ToolRow>("select * from tools where status = 'published' and live_notified_at is null and submitter_email is not null");
-  for (const t of rows) {
-    const mail = templates.listingLive({ to: t.submitter_email!, name: t.submitter_name ?? '', toolName: t.name, url: `${config.siteUrl}/tools/${t.slug}/`, featured: isFeatured(t) });
-    await boss.send(Q.email, mail, { startAfter: 240 });
+  const tools = (await q<ToolRow>("select * from tools where status = 'published' and live_notified_at is null and submitter_email is not null")).rows;
+  for (const t of tools) {
+    await boss.send(Q.email, templates.toolLive({ to: t.submitter_email!, name: t.submitter_name ?? '', toolName: t.name, url: `${config.siteUrl}/tools/${t.slug}/`, featured: isFeatured(t), token: (t as any).edit_token }), { startAfter: 240 });
     await q('update tools set live_notified_at = now() where id = $1', [t.id]);
+  }
+  const posts = (await q<PostRow>("select * from posts where status = 'published' and live_notified_at is null and submitter_email is not null")).rows;
+  for (const p of posts) {
+    await boss.send(Q.email, templates.articleLive({ to: p.submitter_email!, name: p.submitter_name ?? '', title: p.title, url: `${config.siteUrl}/blog/${p.slug}/` }), { startAfter: 240 });
+    await q('update posts set live_notified_at = now() where id = $1', [p.id]);
   }
 }
 
@@ -99,9 +100,6 @@ async function sendFeaturedReminders(): Promise<void> {
     await q('update tools set reminder_sent_at = now() where id = $1', [t.id]);
   }
 }
-
-/** The public base URL of this backend, taken from the request in routes; here we fall back to an env-derived guess. */
-export const apiBase = (): string => (process.env.API_BASE_URL ?? '').replace(/\/$/, '');
 
 type OrderRow = { id: string; kind: string; tool_id: string | null; email: string | null; name: string | null; amount_cents: number; currency: string; status: string; metadata: Record<string, any> };
 
@@ -120,10 +118,11 @@ async function processPaymentEvent(eventId: string): Promise<void> {
       const order = await findOrder(meta.order_id, paymentId);
       if (!order) throw new Error(`No order for payment ${paymentId} (order_id ${meta.order_id ?? 'missing'})`);
       if (order.status !== 'paid') {
+        const paidAt = new Date();
         await q(
-          `update orders set status = 'paid', paid_at = now(), provider_payment_id = coalesce($2, provider_payment_id),
+          `update orders set status = 'paid', paid_at = $5, provider_payment_id = coalesce($2, provider_payment_id),
              email = coalesce(email, $3), name = coalesce(name, $4) where id = $1`,
-          [order.id, paymentId ?? null, customerEmail ?? null, customerName ?? null],
+          [order.id, paymentId ?? null, customerEmail ?? null, customerName ?? null, paidAt],
         );
         let next = 'We will be in touch within one business day.';
         if (order.kind === 'featured' && order.tool_id) {
@@ -134,14 +133,17 @@ async function processPaymentEvent(eventId: string): Promise<void> {
             : 'Your listing is in the review queue. Featured placement switches on the moment it is approved, usually within five business days.';
           if (t?.status === 'published') await enqueueDeploy(`featured paid for ${t.slug}`);
         } else if (order.kind === 'sponsored') {
-          await q("update articles set status = 'paid' where order_id = $1", [order.id]);
           next = 'We review the draft or pitch and reply within one business day with a publication date, normally within three business days.';
         } else if (order.kind === 'directory_package') {
-          next = 'We email you within one business day to collect the product details and start submissions. The full spreadsheet of live listings follows within five to seven days.';
+          next = 'We email you within one business day to collect the product details and start submissions. The full spreadsheet of live listings follows within seven business days.';
         }
         const to = customerEmail ?? order.email;
-        if (to) await enqueueEmail(templates.orderPaid({ to, name: customerName ?? order.name ?? '', what: describe(order), amountCents: order.amount_cents, currency: order.currency, next }));
-        await enqueueEmail(templates.ownerNew({ subject: `Payment: ${describe(order)}`, lines: [`From: ${to ?? 'unknown'}`, `Amount: ${(order.amount_cents / 100).toFixed(2)} ${order.currency}`, `Order: ${order.id}`], adminUrl: `${apiBase()}/admin?tab=orders` }));
+        if (to) await enqueueEmail(templates.orderPaid({ to, name: customerName ?? order.name ?? '', what: describe(order), amountCents: order.amount_cents, currency: order.currency, next, orderId: order.id, paidAt }));
+        await enqueueEmail(templates.ownerNew({
+          subject: `Payment: ${describe(order)}`,
+          details: [['From', to ?? 'unknown'], ['Amount', `${(order.amount_cents / 100).toFixed(2)} ${order.currency}`], ['Order', order.id]],
+          adminUrl: `${apiBase()}/admin?tab=orders`,
+        }));
       }
     } else if (ev.type === 'refund.succeeded' || ev.type === 'payment.refunded') {
       const order = await findOrder(meta.order_id, paymentId);

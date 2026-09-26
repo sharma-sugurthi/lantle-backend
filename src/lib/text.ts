@@ -18,15 +18,19 @@ export function slugify(s: string): string {
   return s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-').slice(0, 60) || 'tool';
 }
 
-export async function uniqueSlug(base: string): Promise<string> {
+export async function uniqueSlug(base: string, table: 'tools' | 'posts' = 'tools'): Promise<string> {
   let slug = slugify(base);
   for (let i = 2; i < 100; i++) {
-    const { rowCount } = await q('select 1 from tools where slug = $1', [slug]);
+    const { rowCount } = await q(`select 1 from ${table} where slug = $1`, [slug]);
     if (!rowCount) return slug;
     slug = `${slugify(base)}-${i}`;
   }
   return `${slugify(base)}-${Date.now()}`;
 }
+
+export const newToken = (): string => crypto.randomBytes(24).toString('hex');
+
+export const parseTags = (s: string): string[] => [...new Set(s.split(',').map((t) => cleanLine(t, 40)).filter(Boolean))].slice(0, 8);
 
 /** Builds the review body from the four submission answers, in the same shape as an editorial review. */
 export function bodyFromAnswers(name: string, a: { what: string; shines: string; short: string; conclusion: string }): string {

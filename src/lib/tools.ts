@@ -4,7 +4,7 @@ export type ToolRow = {
   id: string; slug: string; name: string; website: string; tagline: string; vertical: string; category: string;
   pricing: string; best_for: string; rating: number | string | null; editors_pick: boolean; thumbnail_url: string | null;
   body_md: string; status: string; plan: string; paid_until: Date | null; submitter_email: string | null;
-  submitter_name: string | null; notes: string | null; reject_reason: string | null; added_at: Date;
+  submitter_name: string | null; notes: string | null; reject_reason: string | null; review_note: string | null; edit_token: string | null; added_at: Date;
   published_at: Date | null; live_notified_at: Date | null; reminder_sent_at: Date | null; updated_at: Date;
 };
 
