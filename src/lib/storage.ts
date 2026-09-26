@@ -5,11 +5,7 @@ import { config } from '../config.js';
 let client: SupabaseClient | null = null;
 function supabase(): SupabaseClient {
   if (!config.supabase.url || !config.supabase.key) throw new Error('Supabase Storage is not configured (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY).');
-  return (client ??= createClient(config.supabase.url, config.supabase.key, {
-    auth: { persistSession: false },
-    realtime: { timeout: 30000 },
-    global: { headers: {} },
-  } as Parameters<typeof createClient>[2] & { realtime: { timeout: number } }));
+  return (client ??= createClient(config.supabase.url, config.supabase.key, { auth: { persistSession: false } }));
 }
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
