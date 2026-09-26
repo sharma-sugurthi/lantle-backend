@@ -2,10 +2,15 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import sharp from 'sharp';
 import { config } from '../config.js';
 
+import WebSocket from 'ws';
+
 let client: SupabaseClient | null = null;
 function supabase(): SupabaseClient {
   if (!config.supabase.url || !config.supabase.key) throw new Error('Supabase Storage is not configured (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY).');
-  return (client ??= createClient(config.supabase.url, config.supabase.key, { auth: { persistSession: false } }));
+  return (client ??= createClient(config.supabase.url, config.supabase.key, {
+    auth: { persistSession: false },
+    realtime: { timeout: 30000, transport: WebSocket as any },
+  }));
 }
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
