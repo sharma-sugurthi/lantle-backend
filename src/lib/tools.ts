@@ -11,6 +11,8 @@ export type ToolRow = {
   pros: string[]; cons: string[]; key_features: string[]; platforms: string[]; integrations: string[];
   starting_price: string | null; free_tier: boolean | null; trial_days: number | null; deployment: string | null;
   company_size: string[]; verdict_line: string | null; data_checked_at: Date | string | null;
+  // false while a paid listing is waiting for the submitter to add the description (pay first, complete later)
+  listing_complete: boolean;
 };
 
 export type ComparisonFields = Pick<ToolRow, 'pros' | 'cons' | 'key_features' | 'platforms' | 'integrations' | 'starting_price' | 'free_tier' | 'trial_days' | 'deployment' | 'company_size' | 'verdict_line'>;

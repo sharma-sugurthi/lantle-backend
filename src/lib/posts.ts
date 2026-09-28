@@ -6,6 +6,7 @@ export type PostRow = {
   company: string | null; website: string | null; submitter_email: string | null; submitter_name: string | null;
   written_by_us: boolean; notes: string | null; review_note: string | null; reject_reason: string | null; edit_token: string | null;
   pub_date: Date; updated_date: Date | null; published_at: Date | null; live_notified_at: Date | null; created_at: Date; updated_at: Date;
+  listing_complete: boolean;
 };
 
 /** Shape the site's blog loader consumes. Field names match the Astro blog schema. */

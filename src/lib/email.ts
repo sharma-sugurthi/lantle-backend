@@ -95,19 +95,21 @@ export const apiBase = (): string => (process.env.API_BASE_URL ?? '').replace(/\
 
 export const templates = {
   // ---- tools ----
-  toolReceived: (d: { to: string; name: string; toolName: string; plan: string; token?: string | null }): Mail => ({
+  toolReceived: (d: { to: string; name: string; toolName: string; plan: string; token?: string | null; complete?: boolean }): Mail => ({
     to: d.to,
     subject: `We received ${d.toolName}`,
-    preheader: 'A person reviews it within five business days.',
-    heading: `Thanks, ${d.toolName} is in the queue`,
+    preheader: d.complete === false ? 'Complete the listing from the link inside.' : 'An editor reviews it within five business days.',
+    heading: d.complete === false ? `${d.toolName}: complete your listing` : `${d.toolName} is in the review queue`,
     paragraphs: [
       `Hi ${d.name || 'there'},`,
-      `Thanks for submitting ${d.toolName} to ${site()}. A person reads every submission, usually within five business days. You will hear from us when it is live, or with a short note if something needs changing first.`,
-      ...(d.plan === 'featured' ? ['Your featured placement is confirmed and switches on the moment the listing is approved.'] : []),
+      d.complete === false
+        ? `${d.toolName} is registered. Use the link below to add the tagline, the description and a screenshot. The review starts the moment the listing is complete.`
+        : `An editor reads every submission within five business days. You hear from us when ${d.toolName} is live, or with a short note if something needs changing first.`,
+      ...(d.plan === 'featured' ? ['Featured placement switches on the moment the listing is approved: dofollow link, pinned to the top of its category for twelve months.'] : []),
     ],
     details: [['Tool', d.toolName], ['Plan', d.plan === 'featured' ? 'Featured listing' : 'Basic listing (free)'], ['Review time', 'Up to 5 business days']],
-    cta: editLink(d.token) ? { label: 'View or edit your submission', url: editLink(d.token)! } : undefined,
-    note: 'Keep this email. The link above lets you update the submission at any time, before or after it is live.',
+    cta: editLink(d.token) ? { label: d.complete === false ? 'Complete the listing' : 'View or edit the submission', url: editLink(d.token)! } : undefined,
+    note: 'Keep this email. The link is private and lets you update the listing at any time, before or after it is live.',
   }),
   toolChangesRequested: (d: { to: string; name: string; toolName: string; note: string; token?: string | null }): Mail => ({
     to: d.to,
@@ -152,19 +154,21 @@ export const templates = {
   }),
 
   // ---- articles ----
-  articleReceived: (d: { to: string; name: string; title: string; writtenByUs: boolean; token?: string | null }): Mail => ({
+  articleReceived: (d: { to: string; name: string; title: string; writtenByUs: boolean; token?: string | null; complete?: boolean }): Mail => ({
     to: d.to,
     subject: `We received your article: ${d.title}`,
-    preheader: 'We reply within one business day with a publication date.',
-    heading: 'Your sponsored article is in the queue',
+    preheader: d.complete === false ? 'Add the title and draft from the link inside.' : 'A publication date follows within one business day.',
+    heading: d.complete === false ? 'Your sponsored article: add the draft' : 'Your sponsored article is in the queue',
     paragraphs: [
       `Hi ${d.name || 'there'},`,
-      d.writtenByUs
-        ? 'We write the article from your pitch and send you a draft to approve before it is published.'
-        : 'We review the draft, edit for clarity where needed, and reply within one business day with a publication date, normally within three business days.',
+      d.complete === false
+        ? (d.writtenByUs ? 'Use the link below to give us the angle, the product pages to link and anything we must include. We write the article and send you a draft to approve.' : 'Use the link below to add the title and the draft. The editor picks it up the moment it is in.')
+        : d.writtenByUs
+          ? 'We write the article from your pitch and send you a draft to approve before it is published.'
+          : 'The editor reviews the draft, edits for clarity where needed, and confirms a publication date within one business day. Most articles are live within three business days.',
     ],
     details: [['Title', d.title], ['Writing', d.writtenByUs ? 'By us (+' + config.prices.writingAddon.label + ')' : 'Your draft'], ['Links', 'Up to 2 dofollow, rel="sponsored"']],
-    cta: editLink(d.token) ? { label: 'View or edit the draft', url: editLink(d.token)! } : undefined,
+    cta: editLink(d.token) ? { label: d.complete === false ? 'Add the draft' : 'View or edit the draft', url: editLink(d.token)! } : undefined,
   }),
   articleChangesRequested: (d: { to: string; name: string; title: string; note: string; token?: string | null }): Mail => ({
     to: d.to,
@@ -201,14 +205,15 @@ export const templates = {
   }),
 
   // ---- orders ----
-  orderPaid: (d: { to: string; name: string; what: string; amountCents: number; currency: string; next: string; orderId: string; paidAt: Date }): Mail => ({
+  orderPaid: (d: { to: string; name: string; what: string; amountCents: number; currency: string; next: string; orderId: string; paidAt: Date; links?: [string, string][] }): Mail => ({
     to: d.to,
     subject: `Payment received: ${d.what}`,
-    preheader: `${money(d.amountCents, d.currency)} received. Here is what happens next.`,
-    heading: 'Payment received',
-    paragraphs: [`Hi ${d.name || 'there'},`, 'Thank you. Your payment has gone through and the order is confirmed.', `What happens next: ${d.next}`],
-    details: [['Item', d.what], ['Amount', money(d.amountCents, d.currency)], ['Date', fmtDate(d.paidAt)], ['Order reference', d.orderId.slice(0, 8).toUpperCase()], ['Receipt', 'Sent separately by Dodo Payments']],
-    note: 'Questions or a change of mind: reply to this email. Refunds are handled through the same provider.',
+    preheader: `${money(d.amountCents, d.currency)} received. ${d.links?.length ? 'Your private links are inside.' : 'Here is what happens next.'}`,
+    heading: d.links?.length ? 'Paid. Now complete your listing' : 'Payment received',
+    paragraphs: [`Hi ${d.name || 'there'},`, 'Your payment has gone through and the order is confirmed.', `What happens next: ${d.next}`],
+    details: [['Order', d.what], ['Amount', money(d.amountCents, d.currency)], ['Date', fmtDate(d.paidAt)], ['Reference', d.orderId.slice(0, 8).toUpperCase()], ['Receipt', 'Sent separately by Dodo Payments'], ...(d.links ?? [])],
+    cta: d.links?.length ? { label: d.links.length === 1 ? 'Complete it now' : 'Complete the first one', url: d.links[0][1] } : undefined,
+    note: d.links?.length ? 'Each link is private to that item. Keep this email.' : 'Questions or a change of mind: reply to this email. Refunds are handled through the same provider.',
   }),
 
   // ---- owner ----

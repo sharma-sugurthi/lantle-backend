@@ -49,6 +49,16 @@ The site's `npm run dev` needs `TOOLS_API_URL=http://localhost:3000` in its own 
 - Migrations in `migrations/*.sql` run automatically on boot.
 - Taxonomy lives in `src/taxonomy.ts` here and `src/data/taxonomy.ts` in the site. Change both when adding a vertical or a feature label.
 
+## Pay first, complete later, and the order builder
+
+Paid items no longer ask for the full description before checkout. A featured listing or a sponsored article is created with the minimum (name, website, email, category), the buyer goes straight to Dodo, and the confirmation email plus the thank-you page carry the private link (`/s/<token>`) where they complete the listing or add the draft. Such rows carry `listing_complete = false`, show an "incomplete" pill in the admin queue, and cannot be approved until the submitter has saved the missing parts. Free listings still require the full description up front.
+
+The services page has an order builder for the fixed-price items (featured listing, sponsored articles with the writing add-on, directory package). It posts to `/checkout/order-builder`, which creates one `bundle` order with the items in `metadata`, one placeholder tool or post row per item (each with its own private link), and one Dodo checkout with all products in the cart. Quoted work (guest posts, SEO content, LinkedIn) still goes through the order form and gets a payment link by email.
+
+Bundle discount: `BUNDLE_DISCOUNT_PERCENT` (default 15) applies when an order has at least two different fixed-price items. Create a percentage discount code for that amount in the Dodo dashboard and put its code in `DODO_BUNDLE_DISCOUNT_CODE`; it is passed to the checkout session automatically. If the code is not set, a qualifying order is saved and you are emailed to send a manual payment link, so nobody is overcharged. Keep the percent equal to `BUNDLE_DISCOUNT` in the site config.
+
+`GET /checkout/order/:id/summary` returns the order status and the private links (the thank-you page polls it, so it shows "paid" only once the webhook has confirmed it). `GET /checkout/order/:id` re-opens the checkout for an unpaid order. Unpaid orders older than `PENDING_ORDER_DAYS` (default 14) are marked expired by the daily job.
+
 ## Comparison data and verdicts
 
 Every tool carries structured comparison fields (pros, cons, features from a per-vertical vocabulary, platforms, integrations, starting price, free plan, trial, deployment, company size, a one-line verdict). They drive the site's `/tools/compare/a-vs-b/` and `/tools/alternatives/x/` pages and the facts box on each tool page. Submitters fill them in on the submit form and their private edit link; you edit them in the "Comparison data" block on the admin tool page. "Save and mark as checked today" stamps `data_checked_at`, which the site shows as the verification date, so only press it after opening the vendor's pricing page.

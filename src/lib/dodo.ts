@@ -15,6 +15,7 @@ export async function createCheckout(opts: {
   name?: string;
   returnUrl: string;
   metadata: Record<string, string>;
+  discountCodes?: string[];
 }): Promise<{ checkoutUrl: string; sessionId: string }> {
   if (!config.dodo.apiKey) throw new Error('Dodo Payments is not configured (DODO_API_KEY).');
   if (opts.cart.some((c) => !c.product_id)) throw new Error('A Dodo product id is missing. Set the DODO_PRODUCT_* env vars.');
@@ -24,6 +25,7 @@ export async function createCheckout(opts: {
     metadata: opts.metadata,
   };
   if (opts.email) body.customer = { email: opts.email, name: opts.name || undefined };
+  if (opts.discountCodes?.length) body.discount_codes = opts.discountCodes;
   const res = await fetch(`${base()}/checkouts`, {
     method: 'POST',
     headers: { authorization: `Bearer ${config.dodo.apiKey}`, 'content-type': 'application/json' },

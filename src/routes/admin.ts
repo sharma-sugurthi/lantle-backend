@@ -90,7 +90,7 @@ export default async function adminRoutes(app: FastifyInstance) {
           <td><a class="btn ghost sm" href="/admin/comparisons/${c.id}">Open</a></td></tr>`).join('')}</table>` : '<p class="muted">No editorial verdicts yet.</p>'}`;
     } else if (tab === 'orders') {
       const orders = (await q<any>('select o.*, t.name as tool_name, p.title as post_title, p.id as post_id from orders o left join tools t on t.id = o.tool_id left join posts p on p.order_id = o.id order by o.created_at desc limit 300')).rows;
-      body = `<h1>Orders</h1>${orders.length ? `<table><tr><th>When</th><th>What</th><th>Customer</th><th>Amount</th><th>Status</th><th>Ref</th></tr>${orders.map((o: any) => `<tr><td>${fmtDate(o.created_at)}</td><td>${esc(describe(o))}${o.tool_name ? `<br><a href="/admin/tools/${o.tool_id}">${esc(o.tool_name)}</a>` : ''}${o.post_title ? `<br><a href="/admin/posts/${o.post_id}">${esc(o.post_title)}</a>` : ''}</td><td>${esc(o.name ?? '')}<br><span class="meta">${esc(o.email ?? '')}</span></td><td>${money(o.amount_cents, o.currency)}</td><td>${statusPill(o.status)}</td><td class="meta">${esc(o.provider_payment_id ?? o.provider_session_id ?? '')}<br>${esc(o.id)}</td></tr>`).join('')}</table>` : '<p class="muted">No orders yet.</p>'}`;
+      body = `<h1>Orders</h1>${orders.length ? `<table><tr><th>When</th><th>What</th><th>Customer</th><th>Amount</th><th>Status</th><th>Ref</th></tr>${orders.map((o: any) => `<tr><td>${fmtDate(o.created_at)}</td><td>${esc(describe(o))}${o.tool_name ? `<br><a href="/admin/tools/${o.tool_id}">${esc(o.tool_name)}</a>` : ''}${o.post_title ? `<br><a href="/admin/posts/${o.post_id}">${esc(o.post_title)}</a>` : ''}</td><td>${esc(o.name ?? '')}<br><span class="meta">${esc(o.email ?? '')}</span></td><td>${money(o.amount_cents, o.currency)}${o.discount_cents ? `<br><span class="meta">bundle discount ${money(o.discount_cents, o.currency)}</span>` : ''}</td><td>${statusPill(o.status)}</td><td class="meta">${esc(o.provider_payment_id ?? o.provider_session_id ?? '')}<br>${esc(o.id)}</td></tr>`).join('')}</table>` : '<p class="muted">No orders yet.</p>'}`;
     } else if (tab === 'messages') {
       const { rows } = await q<any>('select * from messages order by created_at desc limit 300');
       body = `<h1>Messages</h1>${rows.length ? rows.map((m: any) => `<div class="card" id="m-${m.id}" style="margin-bottom:1rem"><div class="row" style="justify-content:space-between"><strong>${esc(m.name || m.email)}</strong><span class="pill grey">${esc(m.kind.replace('_', ' '))}</span></div><p class="meta"><a href="mailto:${esc(m.email)}">${esc(m.email)}</a>${m.company ? ` · ${esc(m.company)}` : ''}${m.interest ? ` · ${esc(m.interest)}` : ''} · ${fmtDate(m.created_at)}</p><pre>${esc(m.message)}</pre></div>`).join('') : '<p class="muted">No messages yet.</p>'}`;
@@ -188,6 +188,7 @@ export default async function adminRoutes(app: FastifyInstance) {
     if (!isValidCategory(t.vertical, t.category)) problems.push(`pick a real subcategory (currently "${t.category}")`);
     if (t.body_md.trim().length < 100) problems.push('the review body is too short');
     if (t.tagline.length < 10) problems.push('the tagline is missing');
+    if (t.listing_complete === false) problems.push('the submitter has not completed the listing yet');
     if (problems.length) return go(reply, `/admin/tools/${id}`, `Cannot publish yet: ${problems.join('; ')}.`, true);
     await q("update tools set status = 'published', published_at = coalesce(published_at, now()), reject_reason = null, review_note = null, updated_at = now() where id = $1", [id]);
     await enqueueDeploy(`approved ${t.slug}`);
@@ -334,7 +335,8 @@ export default async function adminRoutes(app: FastifyInstance) {
     const p = await getPost(id);
     if (!p) return reply.code(404).send('Not found');
     const problems: string[] = [];
-    if (p.title.length < 5 || p.title === 'Untitled article') problems.push('give it a title');
+    if (p.title.length < 5 || p.title === 'Untitled article' || p.title.startsWith('Sponsored article')) problems.push('give it a title');
+    if (p.listing_complete === false) problems.push('the author has not added the draft yet');
     if (p.description.length < 20) problems.push('write the summary (20 to 200 characters)');
     if (p.body_md.trim().length < 200) problems.push('the article text is too short');
     if (problems.length) return go(reply, `/admin/posts/${id}`, `Cannot publish yet: ${problems.join('; ')}.`, true);
@@ -382,7 +384,7 @@ function toolsTable(rows: ToolRow[]): string {
     <td style="width:72px">${t.thumbnail_url ? `<img src="${esc(t.thumbnail_url)}" alt="" style="width:64px;aspect-ratio:1200/534;object-fit:cover;border-radius:6px">` : '<span class="pill grey">no image</span>'}</td>
     <td><a href="/admin/tools/${t.id}"><strong>${esc(t.name)}</strong></a><br><span class="meta">${esc(t.tagline)}</span></td>
     <td>${esc(getVertical(t.vertical)?.short ?? t.vertical)} / ${esc(t.category)}${t.category === OTHER_CATEGORY ? ' <span class="pill warn">fix</span>' : ''}</td>
-    <td>${statusPill(t.status)}</td><td>${planPill(t)}</td>
+    <td>${statusPill(t.status)}${t.listing_complete === false ? ' <span class="pill warn" title="Paid first; the submitter has not added the description yet">incomplete</span>' : ''}</td><td>${planPill(t)}</td>
     <td class="meta">${fmtDate(t.updated_at)}<br>${esc(t.submitter_email ?? 'editorial')}</td>
     <td><a class="btn ghost sm" href="/admin/tools/${t.id}">Open</a></td></tr>`).join('')}</table>`;
 }
@@ -392,7 +394,7 @@ function postsTable(rows: (PostRow & { order_status?: string | null })[]): strin
     <td style="width:72px">${p.thumbnail_url ? `<img src="${esc(p.thumbnail_url)}" alt="" style="width:64px;aspect-ratio:16/9;object-fit:cover;border-radius:6px">` : '<span class="pill grey">no image</span>'}</td>
     <td><a href="/admin/posts/${p.id}"><strong>${esc(p.title)}</strong></a><br><span class="meta">${esc(p.author)}${p.company ? ` · ${esc(p.company)}` : ''}</span></td>
     <td><span class="pill grey">${esc(p.kind)}</span>${p.written_by_us ? ' <span class="pill warn">we write it</span>' : ''}</td>
-    <td>${statusPill(p.status)}</td>
+    <td>${statusPill(p.status)}${p.listing_complete === false ? ' <span class="pill warn" title="Paid first; the author has not added the draft yet">no draft yet</span>' : ''}</td>
     <td>${p.kind === 'sponsored' ? (p.order_status ? statusPill(p.order_status) : '<span class="pill grey">no order</span>') : '<span class="meta">n/a</span>'}</td>
     <td class="meta">${fmtDate(p.updated_at)}<br>${esc(p.submitter_email ?? 'editorial')}</td>
     <td><a class="btn ghost sm" href="/admin/posts/${p.id}">Open</a></td></tr>`).join('')}</table>`;
@@ -466,7 +468,7 @@ function toolPage(t: ToolRow, orders: any[]): string {
       <div class="card" style="margin-top:1rem">
         <h2 style="margin-top:0">Featured placement</h2>
         <dl class="kv"><dt>Plan</dt><dd>${planPill(t)}</dd></dl>
-        ${orders.length ? `<table style="margin:.75rem 0"><tr><th>When</th><th>Amount</th><th>Status</th></tr>${orders.map((o) => `<tr><td>${fmtDate(o.created_at)}</td><td>${money(o.amount_cents, o.currency)}</td><td>${statusPill(o.status)}</td></tr>`).join('')}</table>` : '<p class="meta">No orders for this tool.</p>'}
+        ${orders.length ? `<table style="margin:.75rem 0"><tr><th>When</th><th>Amount</th><th>Status</th></tr>${orders.map((o) => `<tr><td>${fmtDate(o.created_at)}</td><td>${money(o.amount_cents, o.currency)}${o.discount_cents ? `<br><span class="meta">bundle discount ${money(o.discount_cents, o.currency)}</span>` : ''}</td><td>${statusPill(o.status)}</td></tr>`).join('')}</table>` : '<p class="meta">No orders for this tool.</p>'}
         <form method="post" action="/admin/tools/${t.id}/featured" class="row">
           <button class="btn ghost sm" name="action" value="grant" type="submit">Grant 12 months (manual payment)</button>
           ${t.plan === 'featured' ? '<button class="btn ghost sm" name="action" value="revoke" type="submit">Revoke featured</button>' : ''}

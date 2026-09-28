@@ -8,6 +8,7 @@ import { getPost, postToApi, publishedPosts, type PostRow } from '../lib/posts.j
 import { MAX_UPLOAD_BYTES, processPostImage, processThumbnail, storageConfigured, uploadFile, uploadThumbnail } from '../lib/storage.js';
 import { bodyFromAnswers, clean, cleanLine, esc, ipHash, isEmail, lines, multi, newToken, uniqueSlug } from '../lib/text.js';
 import { publishedTools, saveComparisonFields, toApi, type ComparisonFields, type ToolRow } from '../lib/tools.js';
+import { orderLinks } from '../queue.js';
 import { comparisonToApi, publishedComparisons } from '../lib/comparisons.js';
 import { comparisonFields } from '../lib/forms.js';
 import { verifyTurnstile } from '../lib/turnstile.js';
@@ -128,9 +129,10 @@ export default async function publicRoutes(app: FastifyInstance) {
     const token = newToken();
 
     if (listing === 'sponsored') {
-      const title = cleanLine(str(b, 'article_title'), 160);
+      // Pay first: title and draft are optional here and are added from the private link after checkout.
+      const title = cleanLine(str(b, 'article_title'), 160) || `Sponsored article from ${company}`;
       const draft = clean(str(b, 'article_draft'), 60000);
-      if (!title || draft.length < 20) return redirect(reply, '/submitted/', { status: 'error', msg: 'A proposed title and a draft or pitch are required.' });
+      const complete = draft.length >= 20 && !title.startsWith('Sponsored article from ');
       const writtenByUs = str(b, 'written_by_us') !== '';
       const authorName = cleanLine(str(b, 'author_name'), 100);
       const amount = config.prices.sponsored.cents + (writtenByUs ? config.prices.writingAddon.cents : 0);
@@ -147,16 +149,16 @@ export default async function publicRoutes(app: FastifyInstance) {
         return redirect(reply, '/submitted/', { status: 'error', msg: `Image problem: ${(e as Error).message}` });
       }
       const post = (await q<{ id: string }>(
-        `insert into posts (slug, title, body_md, author, kind, status, order_id, company, website, submitter_email, submitter_name, written_by_us, edit_token, thumbnail_url)
-         values ($1,$2,$3,$4,'sponsored','pending',$5,$6,$7,$8,$9,$10,$11,$12) returning id`,
-        [slug, title, draft, authorName || company, order.id, company, website, email, authorName || submitterName, writtenByUs, token, thumbnailUrl],
+        `insert into posts (slug, title, body_md, author, kind, status, order_id, company, website, submitter_email, submitter_name, written_by_us, edit_token, thumbnail_url, listing_complete)
+         values ($1,$2,$3,$4,'sponsored','pending',$5,$6,$7,$8,$9,$10,$11,$12,$13) returning id`,
+        [slug, title, draft, authorName || company, order.id, company, website, email, authorName || submitterName, writtenByUs, token, thumbnailUrl, complete],
       )).rows[0];
-      await enqueueEmail(templates.articleReceived({ to: email, name: authorName || submitterName || '', title, writtenByUs, token }));
+      await enqueueEmail(templates.articleReceived({ to: email, name: authorName || submitterName || '', title, writtenByUs, token, complete }));
       await enqueueEmail(templates.ownerNew({ subject: `Sponsored article: ${title}`, details: [['From', `${company} <${email}>`], ['Written by us', writtenByUs ? 'yes' : 'no'], ['Amount', `$${(amount / 100).toFixed(2)}`]], adminUrl: `${apiBase()}/admin/posts/${post.id}` }));
       return startCheckout(reply, {
         orderId: order.id, email, name: company,
         cart: [{ product_id: config.dodo.products.sponsored, quantity: 1 }, ...(writtenByUs ? [{ product_id: config.dodo.products.writingAddon, quantity: 1 }] : [])],
-        returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=sponsored`, fallback: { status: 'received', kind: 'sponsored', pay: 'later' },
+        returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=sponsored&o=${order.id}`, fallback: { status: 'received', kind: 'sponsored', pay: 'later', o: order.id },
       });
     }
 
@@ -170,7 +172,9 @@ export default async function publicRoutes(app: FastifyInstance) {
     const short = clean(str(b, 'where_it_falls_short'), 4000);
     if (!isValidCategory(vertical, category, true)) return redirect(reply, '/submitted/', { status: 'error', msg: 'Please pick a category and subcategory.' });
     if (!(PRICING as readonly string[]).includes(pricing)) return redirect(reply, '/submitted/', { status: 'error', msg: 'Please pick a pricing model.' });
-    if (tagline.length < 10 || what.length < 40 || shines.length < 40 || short.length < 20) {
+    // A free listing needs the full description now. A featured listing pays first and completes the description from its private link.
+    const complete = tagline.length >= 10 && what.length >= 40 && shines.length >= 40 && short.length >= 20;
+    if (listing !== 'featured' && !complete) {
       return redirect(reply, '/submitted/', { status: 'error', msg: 'The tagline and the three description answers are required. A sentence or two each is enough.' });
     }
     const slug = await uniqueSlug(company);
@@ -183,14 +187,14 @@ export default async function publicRoutes(app: FastifyInstance) {
       return redirect(reply, '/submitted/', { status: 'error', msg: `Image problem: ${(e as Error).message}` });
     }
     const tool = (await q<{ id: string }>(
-      `insert into tools (slug, name, website, tagline, vertical, category, pricing, best_for, thumbnail_url, body_md, plan, submitter_email, submitter_name, notes, edit_token)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) returning id`,
+      `insert into tools (slug, name, website, tagline, vertical, category, pricing, best_for, thumbnail_url, body_md, plan, submitter_email, submitter_name, notes, edit_token, listing_complete)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) returning id`,
       [slug, company, website, tagline, vertical, category, pricing, cleanLine(str(b, 'best_for'), 120), thumbnailUrl,
-        bodyFromAnswers(company, { what, shines, short, conclusion: clean(str(b, 'conclusion'), 2000) }),
-        listing === 'featured' ? 'featured' : 'basic', email, submitterName, clean(str(b, 'notes'), 2000) || null, token],
+        complete ? bodyFromAnswers(company, { what, shines, short, conclusion: clean(str(b, 'conclusion'), 2000) }) : '',
+        listing === 'featured' ? 'featured' : 'basic', email, submitterName, clean(str(b, 'notes'), 2000) || null, token, complete],
     )).rows[0];
     await saveComparisonFields(tool.id, vertical, comparisonFromBody(b), false);
-    await enqueueEmail(templates.toolReceived({ to: email, name: submitterName ?? '', toolName: company, plan: listing, token }));
+    await enqueueEmail(templates.toolReceived({ to: email, name: submitterName ?? '', toolName: company, plan: listing, token, complete }));
     await enqueueEmail(templates.ownerNew({ subject: `New ${listing} listing: ${company}`, details: [['Category', `${vertical} / ${category}`], ['Website', website], ['From', `${submitterName ?? ''} <${email}>`]], adminUrl: `${apiBase()}/admin/tools/${tool.id}` }));
 
     if (listing !== 'featured') return redirect(reply, '/submitted/', { status: 'received', tool: slug });
@@ -198,7 +202,104 @@ export default async function publicRoutes(app: FastifyInstance) {
     return startCheckout(reply, {
       orderId: order.id, toolId: tool.id, email, name: company,
       cart: [{ product_id: config.dodo.products.featured, quantity: 1 }],
-      returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=featured&tool=${slug}`, fallback: { status: 'received', tool: slug, pay: 'later' },
+      returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=featured&o=${order.id}`, fallback: { status: 'received', tool: slug, pay: 'later', o: order.id },
+    });
+  });
+
+  // ---- Order builder (services page): several fixed-price items, one checkout, bundle discount applied by code ----
+  app.post('/checkout/order-builder', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const b = (req.body ?? {}) as Body;
+    const err = await gate(req, b);
+    if (err) return redirect(reply, '/submitted/', { status: 'error', msg: err });
+    const email = cleanLine(str(b, 'email')).toLowerCase();
+    const company = cleanLine(str(b, 'company'), 80);
+    const website = cleanLine(str(b, 'website'), 300);
+    const wantFeatured = str(b, 'item_featured') !== '';
+    const sponsoredQty = Math.min(5, Math.max(0, parseInt(str(b, 'qty_sponsored'), 10) || 0));
+    const writing = str(b, 'writing_addon') !== '';
+    const wantDirectory = str(b, 'item_directory') !== '';
+    if (!company || !/^https?:\/\/\S+\.\S+/.test(website)) return redirect(reply, '/submitted/', { status: 'error', msg: 'Company name and a full website URL (starting with https://) are required.' });
+    const items: { kind: string; qty: number; cents: number; product: string }[] = [];
+    if (wantFeatured) items.push({ kind: 'featured', qty: 1, cents: config.prices.featured.cents, product: config.dodo.products.featured });
+    if (sponsoredQty) items.push({ kind: 'sponsored', qty: sponsoredQty, cents: config.prices.sponsored.cents, product: config.dodo.products.sponsored });
+    if (sponsoredQty && writing) items.push({ kind: 'writing_addon', qty: sponsoredQty, cents: config.prices.writingAddon.cents, product: config.dodo.products.writingAddon });
+    if (wantDirectory) items.push({ kind: 'directory_package', qty: 1, cents: config.prices.directoryPackage.cents, product: config.dodo.products.directoryPackage });
+    if (!items.length) return redirect(reply, '/submitted/', { status: 'error', msg: 'Pick at least one item.' });
+    const subtotal = items.reduce((n, i) => n + i.cents * i.qty, 0);
+    const distinct = new Set(items.filter((i) => i.kind !== 'writing_addon').map((i) => i.kind)).size;
+    const bundle = distinct >= config.bundle.minItems && config.bundle.percent > 0;
+    const discount = bundle ? Math.round(subtotal * config.bundle.percent / 100) : 0;
+    const token = newToken();
+    // The order row first, so every listing created below can point at it
+    const order = (await q<{ id: string }>(
+      "insert into orders (kind, email, name, amount_cents, discount_cents, metadata) values ('bundle', $1, $2, $3, $4, $5) returning id",
+      [email, company, subtotal - discount, discount, { items: items.map((i) => ({ kind: i.kind, qty: i.qty, cents: i.cents })), website, discount_percent: bundle ? config.bundle.percent : 0, tool_ids: [] }],
+    )).rows[0];
+    const toolIds: string[] = [];
+    if (wantFeatured) {
+      const slug = await uniqueSlug(company);
+      const t = (await q<{ id: string }>(
+        `insert into tools (slug, name, website, tagline, vertical, category, pricing, body_md, plan, submitter_email, submitter_name, edit_token, listing_complete)
+         values ($1,$2,$3,'',$4,$5,'Paid','','featured',$6,$7,$8,false) returning id`,
+        [slug, company, website, VERTICALS[0].slug, OTHER_CATEGORY, email, cleanLine(str(b, 'name'), 100) || null, token],
+      )).rows[0];
+      toolIds.push(t.id);
+      await q('update orders set tool_id = $2, metadata = metadata || $3 where id = $1', [order.id, t.id, { tool_ids: toolIds }]);
+    }
+    for (let i = 0; i < sponsoredQty; i++) {
+      const title = `Sponsored article ${sponsoredQty > 1 ? i + 1 + ' ' : ''}from ${company}`.replace(/\s+/g, ' ');
+      await q(
+        `insert into posts (slug, title, body_md, author, kind, status, order_id, company, website, submitter_email, submitter_name, written_by_us, edit_token, listing_complete)
+         values ($1,$2,'',$3,'sponsored','pending',$4,$5,$6,$7,$8,$9,$10,false)`,
+        [await uniqueSlug(title, 'posts'), title, company, order.id, company, website, email, cleanLine(str(b, 'name'), 100) || null, writing, newToken()],
+      );
+    }
+    await enqueueEmail(templates.ownerNew({
+      subject: `Order: ${company}`,
+      details: [['Items', items.map((i) => `${i.qty} x ${i.kind}`).join(', ')], ['Total', `$${((subtotal - discount) / 100).toFixed(2)}${discount ? ` (bundle discount $${(discount / 100).toFixed(2)})` : ''}`], ['From', `${company} <${email}>`]],
+      adminUrl: `${apiBase()}/admin?tab=orders`,
+    }));
+    if (bundle && !config.dodo.bundleDiscountCode) {
+      // The discount cannot be applied at checkout without a code, so this order is invoiced by hand rather than overcharged.
+      app.log.warn({ order: order.id }, 'bundle discount requested but DODO_BUNDLE_DISCOUNT_CODE is not set; order left for a manual payment link');
+      return redirect(reply, '/submitted/', { status: 'received', kind: 'bundle', pay: 'later', o: order.id });
+    }
+    return startCheckout(reply, {
+      orderId: order.id, email, name: company, discountCodes: bundle ? [config.dodo.bundleDiscountCode] : [],
+      cart: items.map((i) => ({ product_id: i.product, quantity: i.qty })),
+      returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=bundle&o=${order.id}`, fallback: { status: 'received', kind: 'bundle', pay: 'later', o: order.id },
+    });
+  });
+
+  // ---- Order status and private links for the thank-you page. The order id is a random uuid and acts as the secret. ----
+  app.get('/checkout/order/:id/summary', { config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const { id } = req.params as { id: string };
+    if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send({ error: 'not found' });
+    const o = (await q<any>('select * from orders where id = $1', [id])).rows[0];
+    if (!o) return reply.code(404).send({ error: 'not found' });
+    reply.header('cache-control', 'no-store');
+    const links = await orderLinks(o);
+    return { status: o.status, kind: o.kind, amountCents: o.amount_cents, discountCents: o.discount_cents ?? 0, items: links.map(([label, url]) => ({ label, url })), payUrl: o.status === 'pending' && paymentsConfigured() ? `${apiBase()}/checkout/order/${o.id}` : null };
+  });
+
+  // ---- Re-open the checkout for an order that was never paid (from the thank-you page or the private link) ----
+  app.get('/checkout/order/:id', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const { id } = req.params as { id: string };
+    if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send('Not found');
+    const o = (await q<any>('select * from orders where id = $1', [id])).rows[0];
+    if (!o) return reply.code(404).send('Not found');
+    if (o.status === 'paid') return redirect(reply, '/submitted/', { status: 'paid', kind: o.kind, o: o.id });
+    if (o.status !== 'pending' && o.status !== 'expired' && o.status !== 'failed') return redirect(reply, '/submitted/', { status: 'error', msg: 'This order can no longer be paid. Reply to any email from us for help.' });
+    const products = config.dodo.products as Record<string, string>;
+    const map: Record<string, string> = { featured: products.featured, sponsored: products.sponsored, writing_addon: products.writingAddon, directory_package: products.directoryPackage };
+    const cart = o.kind === 'bundle'
+      ? ((o.metadata.items ?? []) as { kind: string; qty: number }[]).map((i) => ({ product_id: map[i.kind], quantity: i.qty }))
+      : [{ product_id: map[o.kind], quantity: 1 }, ...(o.kind === 'sponsored' && o.metadata.written_by_us ? [{ product_id: products.writingAddon, quantity: 1 }] : [])];
+    if (o.status !== 'pending') await q("update orders set status = 'pending' where id = $1", [o.id]);
+    return startCheckout(reply, {
+      orderId: o.id, toolId: o.tool_id ?? undefined, email: o.email ?? undefined, name: o.name ?? undefined, cart,
+      discountCodes: o.metadata.discount_percent && config.dodo.bundleDiscountCode ? [config.dodo.bundleDiscountCode] : [],
+      returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=${o.kind}&o=${o.id}`, fallback: { status: 'received', kind: o.kind, pay: 'later', o: o.id },
     });
   });
 
@@ -223,8 +324,11 @@ export default async function publicRoutes(app: FastifyInstance) {
     const item = await findByToken(token);
     if (!item) return reply.code(404).type('text/html').send(publicLayout('Not found', '<div class="card"><h1>Link not found</h1><p class="muted">This edit link is not valid. Reply to any email from us and we will send a fresh one.</p></div>'));
     const qs = req.query as Record<string, string>;
+    const order = item.kind === 'tool'
+      ? (await q<any>('select * from orders where (tool_id = $1 or metadata->\'tool_ids\' ? $1::text) order by created_at desc limit 1', [item.row.id])).rows[0]
+      : item.row.order_id ? (await q<any>('select * from orders where id = $1', [item.row.order_id])).rows[0] : null;
     reply.type('text/html');
-    return publicLayout(item.kind === 'tool' ? item.row.name : item.row.title, item.kind === 'tool' ? toolEditPage(item.row) : postEditPage(item.row), { flash: qs.flash, flashKind: qs.err ? 'err' : 'ok' });
+    return publicLayout(item.kind === 'tool' ? item.row.name : item.row.title, item.kind === 'tool' ? toolEditPage(item.row, order) : postEditPage(item.row, order), { flash: qs.flash, flashKind: qs.err ? 'err' : 'ok' });
   });
 
   app.post('/s/:token', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req, reply) => {
@@ -237,6 +341,7 @@ export default async function publicRoutes(app: FastifyInstance) {
     const row = item.row;
     const what = item.kind === 'tool' ? item.row.name : item.row.title;
     const editable = row.status === 'pending' || row.status === 'changes_requested';
+    const wasComplete = (row as any).listing_complete !== false;
 
     if (!editable) {
       // Live or rejected: the submitter can only send a note.
@@ -262,7 +367,7 @@ export default async function publicRoutes(app: FastifyInstance) {
         const thumb = img ? await uploadThumbnail(row.slug, img) : null;
         await q(
           `update tools set website=$2, tagline=$3, vertical=$4, category=$5, pricing=$6, best_for=$7, body_md=$8, thumbnail_url=coalesce($9, thumbnail_url),
-             status='pending', review_note=null, updated_at=now() where id=$1`,
+             status='pending', review_note=null, listing_complete=true, updated_at=now() where id=$1`,
           [row.id, website, tagline, vertical, category, pricing, cleanLine(str(b, 'best_for'), 120), body + '\n', thumb],
         );
         await saveComparisonFields(row.id, vertical, comparisonFromBody(b), false);
@@ -274,7 +379,7 @@ export default async function publicRoutes(app: FastifyInstance) {
         const thumb = img ? await uploadFile(`posts/${row.slug}.webp`, img, 'image/webp') : null;
         await q(
           `update posts set title=$2, description=$3, author=$4, author_bio=$5, body_md=$6, thumbnail_url=coalesce($7, thumbnail_url),
-             status='pending', review_note=null, updated_at=now() where id=$1`,
+             status='pending', review_note=null, listing_complete=true, updated_at=now() where id=$1`,
           [row.id, title, cleanLine(str(b, 'description'), 200), cleanLine(str(b, 'author'), 100) || item.row.author, clean(str(b, 'author_bio'), 600) || null, body + '\n', thumb],
         );
       }
@@ -282,17 +387,17 @@ export default async function publicRoutes(app: FastifyInstance) {
       return back(`Could not save: ${(e as Error).message}`, true);
     }
     if (row.submitter_email) await enqueueEmail(templates.submissionUpdated({ to: row.submitter_email, name: row.submitter_name ?? '', what }));
-    await enqueueEmail(templates.ownerNew({ subject: `Updated ${item.kind}: ${what}`, details: [['Status', 'back in the queue'], ['From', row.submitter_email ?? '']], adminUrl: `${apiBase()}/admin/${item.kind === 'tool' ? 'tools' : 'posts'}/${row.id}` }));
-    return back('Saved. Your update is back at the top of the review queue.');
+    await enqueueEmail(templates.ownerNew({ subject: `${wasComplete ? 'Updated' : 'Completed'} ${item.kind}: ${what}`, details: [['Status', wasComplete ? 'back in the queue' : 'ready for review'], ['From', row.submitter_email ?? '']], adminUrl: `${apiBase()}/admin/${item.kind === 'tool' ? 'tools' : 'posts'}/${row.id}` }));
+    return back(wasComplete ? 'Saved. Your update is back at the top of the review queue.' : 'Saved. The listing is complete and in the review queue.');
   });
 
-  async function startCheckout(reply: FastifyReply, o: { orderId: string; toolId?: string; email?: string; name?: string; cart: { product_id: string; quantity: number }[]; returnUrl: string; fallback: Record<string, string> | null }) {
+  async function startCheckout(reply: FastifyReply, o: { orderId: string; toolId?: string; email?: string; name?: string; cart: { product_id: string; quantity: number }[]; returnUrl: string; fallback: Record<string, string> | null; discountCodes?: string[] }) {
     if (!paymentsConfigured()) {
       if (o.fallback) return redirect(reply, '/submitted/', o.fallback);
       return redirect(reply, '/thanks/', { type: 'error', msg: 'Online payment is not switched on yet. Email us and we will send a payment link.' });
     }
     try {
-      const { checkoutUrl, sessionId } = await createCheckout({ cart: o.cart, email: o.email, name: o.name, returnUrl: o.returnUrl, metadata: { order_id: o.orderId, ...(o.toolId ? { tool_id: o.toolId } : {}) } });
+      const { checkoutUrl, sessionId } = await createCheckout({ cart: o.cart, email: o.email, name: o.name, returnUrl: o.returnUrl, discountCodes: o.discountCodes, metadata: { order_id: o.orderId, ...(o.toolId ? { tool_id: o.toolId } : {}) } });
       await q('update orders set provider_session_id = $2 where id = $1', [o.orderId, sessionId]);
       return reply.code(303).redirect(checkoutUrl);
     } catch (e) {
@@ -332,6 +437,20 @@ async function findByToken(token: string): Promise<Found | null> {
   return null;
 }
 
+function orderBlock(order: any): string {
+  if (!order) return '';
+  const amount = `$${(order.amount_cents / 100).toFixed(2)}`;
+  if (order.status === 'paid') return `<div class="card" style="margin-bottom:1rem"><strong>Paid ${amount}</strong> <span class="muted">on ${new Date(order.paid_at ?? order.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}. Reference ${esc(String(order.id).slice(0, 8).toUpperCase())}. The receipt came from Dodo Payments.</span></div>`;
+  if (order.status === 'refunded') return `<div class="notice"><strong>Refunded.</strong> ${amount} was returned to the original payment method.</div>`;
+  return `<div class="notice"><strong>Payment pending: ${amount}.</strong> Featured placement and publication start once it is paid. <a class="btn sm" style="margin-left:.5rem" href="/checkout/order/${esc(order.id)}">Pay now</a></div>`;
+}
+
+function checklist(items: [string, boolean][]): string {
+  const open = items.filter(([, ok]) => !ok);
+  if (!open.length) return '';
+  return `<div class="card" style="margin-bottom:1rem"><strong>Complete your listing.</strong> <span class="muted">Still needed:</span><ul style="margin:.5rem 0 0 1.2rem;padding:0">${open.map(([label]) => `<li>${esc(label)}</li>`).join('')}</ul><p class="meta" style="margin:.5rem 0 0">Save the form below once these are in and the review starts.</p></div>`;
+}
+
 function statusBlock(status: string, reviewNote: string | null, rejectReason: string | null, what: string): string {
   if (status === 'changes_requested') return `<div class="notice"><strong>The reviewer asked for a change.</strong><br>${esc(reviewNote ?? '')}<br><span class="meta">Save your update below and it goes straight back to the queue.</span></div>`;
   if (status === 'published') return `<div class="card" style="margin-bottom:1rem"><strong>${esc(what)} is live.</strong> <span class="muted">Edits to a live page go through a person. Tell us what to change and we will do it.</span></div>`;
@@ -344,12 +463,13 @@ const imageFields = (label: string) => `<label>${label} <input type="file" name=
 
 const noteForm = () => `<form class="stack card" method="post"><input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off"><label>What should we change? <textarea name="message" required></textarea></label><button class="btn" type="submit">Send to the reviewer</button></form>`;
 
-function toolEditPage(t: ToolRow & { edit_token: string }): string {
+function toolEditPage(t: ToolRow & { edit_token: string; listing_complete?: boolean }, order: any = null): string {
   const editable = t.status === 'pending' || t.status === 'changes_requested';
   const v = getVertical(t.vertical);
   const cats = [...(v?.categories ?? []), OTHER_CATEGORY];
   const taxonomy = JSON.stringify(Object.fromEntries(VERTICALS.map((x) => [x.slug, x.categories])));
-  return `<h1>${esc(t.name)}</h1>${statusBlock(t.status, t.review_note, t.reject_reason, t.name)}
+  const incomplete = t.listing_complete === false;
+  return `<h1>${incomplete ? `Complete the listing for ${esc(t.name)}` : esc(t.name)}</h1>${orderBlock(order)}${incomplete ? checklist([['A real subcategory', t.category !== OTHER_CATEGORY], ['Tagline (10 to 140 characters)', t.tagline.length >= 10], ['Description: what it is, where it shines, where it falls short', t.body_md.trim().length >= 100], ['A screenshot or product image', !!t.thumbnail_url]]) : statusBlock(t.status, t.review_note, t.reject_reason, t.name)}
   ${editable ? `<form class="stack card" method="post" enctype="multipart/form-data"><input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
     ${t.thumbnail_url ? `<img src="${esc(t.thumbnail_url)}" alt="" style="max-width:360px;border-radius:10px;border:1px solid var(--border)">` : ''}
     ${imageFields('Screenshot or product image')}
@@ -366,9 +486,10 @@ function toolEditPage(t: ToolRow & { edit_token: string }): string {
     : t.status === 'published' ? noteForm() : ''}`;
 }
 
-function postEditPage(p: PostRow): string {
+function postEditPage(p: PostRow & { listing_complete?: boolean }, order: any = null): string {
   const editable = p.status === 'pending' || p.status === 'changes_requested';
-  return `<h1>${esc(p.title)}</h1>${statusBlock(p.status, p.review_note, p.reject_reason, p.title)}
+  const incomplete = p.listing_complete === false;
+  return `<h1>${incomplete ? (p.written_by_us ? 'Tell us what to write' : 'Add your article') : esc(p.title)}</h1>${orderBlock(order)}${incomplete ? checklist([['A title', !p.title.startsWith('Sponsored article')], [p.written_by_us ? 'Your brief: the angle, the pages to link, anything we must include' : 'The article text (markdown or plain text)', p.body_md.trim().length >= 20]]) : statusBlock(p.status, p.review_note, p.reject_reason, p.title)}
   ${editable ? `<form class="stack card" method="post" enctype="multipart/form-data"><input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
     ${p.thumbnail_url ? `<img src="${esc(p.thumbnail_url)}" alt="" style="max-width:360px;border-radius:10px;border:1px solid var(--border)">` : ''}
     ${imageFields('Cover image (16:9)')}
