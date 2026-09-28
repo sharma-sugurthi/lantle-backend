@@ -1,0 +1,141 @@
+[
+  {
+    "slug": "github-copilot",
+    "verified": true,
+    "sources": ["https://github.com/features/copilot/plans"],
+    "pros": [
+      "Works inside VS Code, JetBrains, Visual Studio, Neovim and Xcode without switching editors",
+      "Coding agent takes a GitHub issue and opens a draft pull request",
+      "Model picker lets you switch providers per request on every plan",
+      "Enterprise admins get content exclusions, usage metrics and SAML SSO",
+      "Free tier gives 2,000 completions and 50 chat requests a month"
+    ],
+    "cons": [
+      "Chat is anchored to the open file unless you attach more context",
+      "Premium request allowance runs out fast under heavy agent use",
+      "Completion quality drops noticeably on niche stacks and internal frameworks"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Code review on pull requests",
+      "Choice of models",
+      "VS Code plugin",
+      "JetBrains plugin",
+      "CLI",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": ["Web", "VS Code", "JetBrains", "CLI", "iOS", "Android"],
+    "integrations": ["GitHub", "Visual Studio", "Xcode", "Neovim", "Eclipse", "Zed", "Azure Data Studio", "Raycast", "Windows Terminal"],
+    "starting_price": "$10 per month",
+    "free_tier": true,
+    "trial_days": 30,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick GitHub Copilot if your team already lives on GitHub and wants AI in every existing editor with enterprise admin controls."
+  },
+  {
+    "slug": "cursor",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Multi-file agent edits land as diffs you accept hunk by hunk",
+      "Repository index means chat answers cite the right files",
+      "Tab completion predicts the next edit and jumps the cursor there",
+      "Background agents run several tasks in parallel in cloud sandboxes",
+      "Rules files encode project conventions that every request follows"
+    ],
+    "cons": [
+      "It is a VS Code fork, so JetBrains and Neovim teams must switch",
+      "Usage-based allowance makes monthly bills variable for heavy agent use",
+      "Some VS Code extensions behave differently after import"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Terminal and command execution",
+      "Choice of models",
+      "Bring your own API key",
+      "CLI",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": ["macOS", "Windows", "Linux", "CLI"],
+    "integrations": ["GitHub", "Slack"],
+    "starting_price": "$20 per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Cursor if you want the strongest multi-file agent workflow and can move your team onto a VS Code fork."
+  },
+  {
+    "slug": "coderabbit",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Reviews every pull request within minutes with line-level comments",
+      "Comments include committable suggestions the author can apply in one click",
+      "Summaries and sequence diagrams explain the change before humans read it",
+      "Path-specific instructions in a YAML file fit existing team conventions",
+      "Free for public repositories on GitHub and GitLab"
+    ],
+    "cons": [
+      "Default settings comment generously, so large PRs get buried in nitpicks",
+      "Does not run your test suite or know business requirements",
+      "Teams that skip tuning end up ignoring the bot entirely"
+    ],
+    "key_features": [
+      "Code review on pull requests",
+      "Test generation",
+      "VS Code plugin",
+      "CLI",
+      "Self-hosted or on-prem option",
+      "Usage analytics",
+      "SSO"
+    ],
+    "platforms": ["Web", "VS Code", "CLI"],
+    "integrations": ["GitHub", "GitLab", "Bitbucket", "Azure DevOps", "Jira", "Linear"],
+    "starting_price": "from $24 per user per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "both",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick CodeRabbit if you want consistent AI review comments on every pull request before a human reviewer looks."
+  },
+  {
+    "slug": "mintlify",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Docs site builds from MDX in your git repo on every push",
+      "OpenAPI spec generates endpoint pages and an interactive request playground",
+      "Pull requests get a preview deployment before merging",
+      "AI assistant answers reader questions and cites the pages it used",
+      "Analytics show what readers search for and which searches return nothing"
+    ],
+    "cons": [
+      "Opinionated layout limits unusual designs or heavy custom components",
+      "AI assistant and authenticated docs sit behind higher tiers",
+      "Pricing by editor seats and feature gating frustrates small teams"
+    ],
+    "key_features": [
+      "Docs hosting",
+      "API reference generation",
+      "CLI",
+      "Usage analytics",
+      "SSO"
+    ],
+    "platforms": ["Web", "CLI"],
+    "integrations": ["GitHub", "GitLab", "Slack", "Segment", "PostHog", "Google Analytics"],
+    "starting_price": null,
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Mintlify if your product is an API and you want polished hosted docs from markdown and an OpenAPI spec."
+  }
+]

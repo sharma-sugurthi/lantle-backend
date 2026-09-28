@@ -6,10 +6,12 @@ import { createCheckout, paymentsConfigured } from '../lib/dodo.js';
 import { publicLayout } from '../lib/html.js';
 import { getPost, postToApi, publishedPosts, type PostRow } from '../lib/posts.js';
 import { MAX_UPLOAD_BYTES, processPostImage, processThumbnail, storageConfigured, uploadFile, uploadThumbnail } from '../lib/storage.js';
-import { bodyFromAnswers, clean, cleanLine, esc, ipHash, isEmail, newToken, uniqueSlug } from '../lib/text.js';
-import { publishedTools, toApi, type ToolRow } from '../lib/tools.js';
+import { bodyFromAnswers, clean, cleanLine, esc, ipHash, isEmail, lines, multi, newToken, uniqueSlug } from '../lib/text.js';
+import { publishedTools, saveComparisonFields, toApi, type ComparisonFields, type ToolRow } from '../lib/tools.js';
+import { comparisonToApi, publishedComparisons } from '../lib/comparisons.js';
+import { comparisonFields } from '../lib/forms.js';
 import { verifyTurnstile } from '../lib/turnstile.js';
-import { VERTICALS, PRICING, OTHER_CATEGORY, getVertical, isValidCategory } from '../taxonomy.js';
+import { VERTICALS, PRICING, OTHER_CATEGORY, FEATURES, PLATFORMS, DEPLOYMENTS, COMPANY_SIZES, getVertical, isValidCategory } from '../taxonomy.js';
 import { enqueueEmail } from '../queue.js';
 
 type Body = Record<string, unknown>;
@@ -67,7 +69,11 @@ export default async function publicRoutes(app: FastifyInstance) {
     reply.header('cache-control', 'public, max-age=60');
     return (await publishedPosts()).map(postToApi);
   });
-  app.get('/api/taxonomy', async () => VERTICALS);
+  app.get('/api/comparisons', async (_req, reply) => {
+    reply.header('cache-control', 'public, max-age=60');
+    return (await publishedComparisons()).map(comparisonToApi);
+  });
+  app.get('/api/taxonomy', async () => ({ verticals: VERTICALS, features: FEATURES, platforms: PLATFORMS, deployments: DEPLOYMENTS, companySizes: COMPANY_SIZES }));
 
   // ---- Simple forms (form-encoded, redirect back to the site) ----
   const formLimit = { config: { rateLimit: { max: 6, timeWindow: '1 minute' } } };
@@ -183,6 +189,7 @@ export default async function publicRoutes(app: FastifyInstance) {
         bodyFromAnswers(company, { what, shines, short, conclusion: clean(str(b, 'conclusion'), 2000) }),
         listing === 'featured' ? 'featured' : 'basic', email, submitterName, clean(str(b, 'notes'), 2000) || null, token],
     )).rows[0];
+    await saveComparisonFields(tool.id, vertical, comparisonFromBody(b), false);
     await enqueueEmail(templates.toolReceived({ to: email, name: submitterName ?? '', toolName: company, plan: listing, token }));
     await enqueueEmail(templates.ownerNew({ subject: `New ${listing} listing: ${company}`, details: [['Category', `${vertical} / ${category}`], ['Website', website], ['From', `${submitterName ?? ''} <${email}>`]], adminUrl: `${apiBase()}/admin/tools/${tool.id}` }));
 
@@ -258,6 +265,7 @@ export default async function publicRoutes(app: FastifyInstance) {
              status='pending', review_note=null, updated_at=now() where id=$1`,
           [row.id, website, tagline, vertical, category, pricing, cleanLine(str(b, 'best_for'), 120), body + '\n', thumb],
         );
+        await saveComparisonFields(row.id, vertical, comparisonFromBody(b), false);
       } else {
         const title = cleanLine(str(b, 'title'), 160);
         const body = clean(String(b['body_md'] ?? ''), 60000);
@@ -293,6 +301,25 @@ export default async function publicRoutes(app: FastifyInstance) {
       return redirect(reply, '/thanks/', { type: 'error', msg: 'Checkout could not be started. Please try again or email us.' });
     }
   }
+}
+
+/** The comparison fields as the public forms send them: one item per line for lists, checkboxes for platforms and company size. */
+function comparisonFromBody(b: Body): ComparisonFields {
+  const trial = parseInt(str(b, 'trial_days'), 10);
+  const free = str(b, 'free_tier');
+  return {
+    pros: lines(str(b, 'pros'), 5, 120),
+    cons: lines(str(b, 'cons'), 4, 120),
+    key_features: multi(b['key_features']).slice(0, 10),
+    platforms: multi(b['platforms']),
+    integrations: lines(str(b, 'integrations'), 10, 40, true),
+    starting_price: cleanLine(str(b, 'starting_price'), 60) || null,
+    free_tier: free === 'yes' ? true : free === 'no' ? false : null,
+    trial_days: Number.isFinite(trial) && trial >= 0 && trial <= 365 ? trial : null,
+    deployment: cleanLine(str(b, 'deployment'), 20) || null,
+    company_size: multi(b['company_size']),
+    verdict_line: cleanLine(str(b, 'verdict_line'), 160) || null,
+  };
 }
 
 type Found = { kind: 'tool'; row: ToolRow & { edit_token: string } } | { kind: 'post'; row: PostRow };
@@ -332,9 +359,10 @@ function toolEditPage(t: ToolRow & { edit_token: string }): string {
     <label>Subcategory <select name="category" id="c-sel">${cats.map((c) => `<option ${c === t.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label></div>
     <div class="two"><label>Pricing <select name="pricing">${PRICING.map((p) => `<option ${p === t.pricing ? 'selected' : ''}>${p}</option>`).join('')}</select></label>
     <label>Best for <input name="best_for" value="${esc(t.best_for)}"></label></div>
+    ${comparisonFields(t.vertical, t)}
     <label>Description <small>Plain text or markdown. Keep the four sections: what it is, where it shines, where it falls short, conclusion.</small><textarea name="body_md" rows="18" required>${esc(t.body_md)}</textarea></label>
     <button class="btn" type="submit">Save update</button></form>
-    <script>const tax=${taxonomy};const other=${JSON.stringify(OTHER_CATEGORY)};document.getElementById('v-sel').addEventListener('change',(e)=>{const c=document.getElementById('c-sel');c.innerHTML='';[...(tax[e.target.value]||[]),other].forEach((x)=>{const o=document.createElement('option');o.textContent=x;c.appendChild(o);});});</script>`
+    <script>const tax=${taxonomy};const other=${JSON.stringify(OTHER_CATEGORY)};const feats=${JSON.stringify(FEATURES)};document.getElementById('v-sel').addEventListener('change',(e)=>{const c=document.getElementById('c-sel');c.innerHTML='';[...(tax[e.target.value]||[]),other].forEach((x)=>{const o=document.createElement('option');o.textContent=x;c.appendChild(o);});const f=document.getElementById('feat-box');f.innerHTML=(feats[e.target.value]||[]).map((x)=>'<label class="chk"><input type="checkbox" name="key_features" value="'+x.replace(/"/g,'&quot;')+'"> '+x+'</label>').join('');});</script>`
     : t.status === 'published' ? noteForm() : ''}`;
 }
 

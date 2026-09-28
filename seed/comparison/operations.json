@@ -1,0 +1,140 @@
+[
+  {
+    "slug": "zip",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Single intake form routes requests to finance, legal, security and IT",
+      "Visual workflow builder lets admins change approval logic without engineers",
+      "Reads and writes NetSuite, Workday, Coupa and SAP vendor and PO records",
+      "Captures contract end dates and notice periods at intake for renewals",
+      "Requesters can submit and approve from Slack or Microsoft Teams"
+    ],
+    "cons": [
+      "No self-serve tier or public pricing; annual enterprise contract only",
+      "Implementation takes weeks of workshops to map approval logic",
+      "AP and virtual card modules are less mature than dedicated spend tools",
+      "Hard to justify below a few hundred employees"
+    ],
+    "key_features": [
+      "Purchase intake and approvals",
+      "Vendor management",
+      "Contract and renewal tracking",
+      "Reminders and workflows",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "Slack", "Microsoft Teams"],
+    "integrations": ["NetSuite", "Workday", "Coupa", "SAP", "Slack", "Microsoft Teams", "Okta", "DocuSign", "Jira"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Zip if purchase approvals have outgrown email and you need one intake flow that feeds your ERP."
+  },
+  {
+    "slug": "flexport",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Ocean, air, truck and rail milestones tracked on one shared timeline",
+      "Customs entries prepared from the shipment's own invoice and packing data",
+      "Duty and landed cost estimates visible before goods ship",
+      "Lane spend, transit variance and supplier on-time analytics built in",
+      "Supplier portal lets factories book against uploaded purchase orders"
+    ],
+    "cons": [
+      "You must use Flexport as forwarder; no visibility layer over other carriers",
+      "Per-shipment quotes mean total cost is unclear until volume runs",
+      "Smaller accounts on minor lanes report slower support and more hand-offs",
+      "Fulfilment network has changed often; verify warehouse coverage first"
+    ],
+    "key_features": [
+      "Freight booking",
+      "Customs and compliance",
+      "Shipment tracking",
+      "Inventory visibility",
+      "Reporting",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["NetSuite", "Shopify", "Amazon", "Walmart", "SAP"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Flexport if you import regularly and want forwarding, customs and landed cost in one login."
+  },
+  {
+    "slug": "calendly",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Free plan covers one calendar and unlimited one-on-one bookings",
+      "Round robin spreads inbound meetings across reps by availability or weight",
+      "Routing forms check Salesforce or HubSpot and send known accounts to owners",
+      "Workflows send email and SMS reminders, follow-ups and no-show nudges",
+      "Invitees recognise the booking page, so links rarely stall"
+    ],
+    "cons": [
+      "Per-seat pricing gets expensive when bought for staff who rarely book externally",
+      "Weak for internal scheduling across many colleagues",
+      "Calendly branding stays on booking pages until you pay",
+      "No notes, agendas or meeting content once the slot is booked"
+    ],
+    "key_features": [
+      "Booking pages",
+      "Round robin and routing",
+      "Reminders and workflows",
+      "Payments collection",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["Google Calendar", "Microsoft Outlook", "Zoom", "Microsoft Teams", "Google Meet", "Salesforce", "HubSpot", "Slack", "Stripe", "PayPal"],
+    "starting_price": "$12 per seat per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick Calendly if your team books external meetings and needs routing and round robin that just work."
+  },
+  {
+    "slug": "crowdstrike-falcon",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "One lightweight sensor covers Windows, macOS and Linux with cloud analysis",
+      "Process tree, command lines and network activity collected before you ask",
+      "Real Time Response gives a remote shell and network containment from console",
+      "Falcon Complete and OverWatch supply 24/7 managed detection and hunting",
+      "Charlotte AI triages alert queues and answers plain-language questions"
+    ],
+    "cons": [
+      "Priced per endpoint per module, so full deployments get expensive fast",
+      "July 2024 content update crashed millions of Windows hosts worldwide",
+      "Not an IT management tool; patching and software distribution need another product",
+      "Console assumes the operator has security operations experience"
+    ],
+    "key_features": [
+      "Endpoint protection",
+      "Threat detection and response",
+      "Identity and access",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "Windows", "macOS", "Linux", "iOS", "Android"],
+    "integrations": ["Microsoft Entra ID", "Active Directory", "AWS", "Microsoft Azure", "Google Cloud", "ServiceNow", "Splunk", "Okta", "Zscaler"],
+    "starting_price": "from $59.99 per device per year",
+    "free_tier": false,
+    "trial_days": 15,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick CrowdStrike Falcon if you need the best endpoint detection and a lean team can buy managed hunting."
+  }
+]

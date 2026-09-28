@@ -1,0 +1,220 @@
+[
+  {
+    "slug": "tableau",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Drag-and-drop canvas makes ad hoc visual exploration fast",
+      "Level of detail expressions and table calculations handle hard analytical questions",
+      "Certified data sources and row-level security support governed self-service",
+      "Built-in geocoding and spatial file support make maps easy",
+      "Tableau Public and community forums answer most problems quickly"
+    ],
+    "cons": [
+      "Three per-user tiers get expensive once dashboards reach everyone",
+      "Data modelling is weaker than a dedicated semantic layer or warehouse",
+      "Learning curve is steep beyond the first simple chart",
+      "Large extracts and busy dashboards can slow down noticeably"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Natural language queries",
+      "Managed connectors",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "Self-hosted option",
+      "API"
+    ],
+    "platforms": [
+      "Web",
+      "macOS",
+      "Windows",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Snowflake",
+      "Google BigQuery",
+      "Databricks",
+      "Amazon Redshift",
+      "Salesforce",
+      "Slack",
+      "Google Sheets",
+      "Microsoft Excel",
+      "SAP HANA",
+      "PostgreSQL"
+    ],
+    "starting_price": "$15 per user per month",
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "both",
+    "company_size": [
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Tableau if your analysts explore data visually and you need polished, governed dashboards at scale."
+  },
+  {
+    "slug": "power-bi",
+    "verified": true,
+    "sources": [
+      "https://www.microsoft.com/en-us/power-platform/products/power-bi/pricing"
+    ],
+    "pros": [
+      "Pro seats at $14 per user let dashboards reach the whole company",
+      "Power Query and DAX tabular models handle star schemas and time intelligence",
+      "Reports embed in Teams and SharePoint, and Excel connects live to models",
+      "Premium per user lifts models to 100 GB and 48 refreshes a day",
+      "Copilot drafts DAX measures and narrative summaries on well-modelled data"
+    ],
+    "cons": [
+      "Power BI Desktop runs only on Windows, so Mac users work in the browser",
+      "DAX filter context produces wrong totals that are hard to spot",
+      "Copilot needs Fabric capacity or Premium per user, not the cheap tiers",
+      "Fabric capacity licensing is hard to estimate for large deployments"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Natural language queries",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "Self-hosted option",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "Windows",
+      "iOS",
+      "Android",
+      "Microsoft Teams"
+    ],
+    "integrations": [
+      "Microsoft Excel",
+      "Microsoft Teams",
+      "SharePoint",
+      "Microsoft Fabric",
+      "SQL Server",
+      "Snowflake",
+      "Google BigQuery",
+      "Databricks",
+      "Salesforce",
+      "Dynamics 365"
+    ],
+    "starting_price": "$14 per user per month",
+    "free_tier": true,
+    "trial_days": 60,
+    "deployment": "both",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Power BI if you already run Microsoft 365 and want governed dashboards in front of everyone at the lowest seat cost."
+  },
+  {
+    "slug": "fivetran",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Hundreds of prebuilt connectors sync a new SaaS source within minutes",
+      "Upstream schema changes propagate to the warehouse without pipeline edits",
+      "Log-based change data capture keeps load on production databases low",
+      "Connector SDK runs custom sources inside the same managed framework",
+      "dbt Core integration and Quickstart models deliver clean tables after loading"
+    ],
+    "cons": [
+      "Monthly active row pricing gets painful on event-heavy or high-churn tables",
+      "Extract and load only, so modelling still happens in the warehouse",
+      "Connector behaviour cannot be customised and bug fixes wait on Fivetran",
+      "Long-tail connectors are less mature than the flagship ones"
+    ],
+    "key_features": [
+      "Managed connectors",
+      "Transformations (SQL, dbt)",
+      "Scheduling and alerts",
+      "Warehouse integration",
+      "Real-time or CDC sync",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web"
+    ],
+    "integrations": [
+      "Snowflake",
+      "Google BigQuery",
+      "Databricks",
+      "Amazon Redshift",
+      "Salesforce",
+      "PostgreSQL",
+      "Stripe",
+      "Google Ads",
+      "HubSpot",
+      "dbt"
+    ],
+    "starting_price": null,
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Fivetran if you want dependable managed connectors into your warehouse and would rather model data than maintain ingestion code."
+  },
+  {
+    "slug": "julius",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Messy CSV to first answer and chart takes a minute or two",
+      "Generated Python is visible, so wrong numbers can be traced and fixed",
+      "Regressions, significance tests and correlations come back with plain explanations",
+      "Sandboxed execution handles files that would freeze a browser spreadsheet",
+      "Persistent threads let you resume an analysis and build on earlier results"
+    ],
+    "cons": [
+      "No governed semantic models, scheduled dashboards or row-level security",
+      "Ambiguous columns or vague questions yield confident but wrong answers",
+      "Free plan message limits run out quickly with real work",
+      "Uploading files makes it easy to overshare sensitive data"
+    ],
+    "key_features": [
+      "Natural language queries",
+      "Dashboards and visualisation",
+      "Managed connectors",
+      "Python and R notebooks",
+      "Warehouse integration"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Google Sheets",
+      "Microsoft Excel",
+      "PostgreSQL",
+      "MySQL",
+      "Snowflake",
+      "Google BigQuery"
+    ],
+    "starting_price": "$20 per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small"
+    ],
+    "verdict_line": "Pick Julius if you want to question spreadsheets and CSVs in plain language and see the code behind every answer."
+  }
+]

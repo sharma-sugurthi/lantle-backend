@@ -1,0 +1,109 @@
+[
+  {
+    "slug": "jasper",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Trained Brand Voice keeps first drafts close to house style",
+      "Knowledge Base gives the model product facts instead of guesses",
+      "Campaign workflows turn one brief into a full asset set",
+      "Separate voices and knowledge bases per client suit agencies",
+      "Admins can lock brand settings and see per user output"
+    ],
+    "cons": [
+      "Copy drifts toward safe generic phrasing and still needs an editor",
+      "Per seat price is hard to justify for one or two writers",
+      "No native keyword research; SEO guidance depends on the Surfer add on"
+    ],
+    "key_features": ["AI writing", "Brand voice", "Templates library", "Collaboration and approvals", "API", "SSO"],
+    "platforms": ["Web", "Chrome extension", "Google Workspace"],
+    "integrations": ["Google Docs", "Gmail", "Surfer", "Webflow", "Copyscape"],
+    "starting_price": "$49 per seat per month",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Jasper if several writers must produce high volumes of copy under one or more strict brand voices with admin control."
+  },
+  {
+    "slug": "surfer",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Live Content Score shows writers exactly which terms are missing",
+      "Google Docs and WordPress add ons optimise in place",
+      "Shareable editor links work for freelancers without an account",
+      "Content Audit ranks decaying pages by refresh potential",
+      "AI drafts start from SERP analysis rather than a blank prompt"
+    ],
+    "cons": [
+      "Score rewards term coverage, so blind use produces bloated articles",
+      "No backlink data, technical crawl or paid search research",
+      "Document based pricing punishes teams optimising many short pages",
+      "AI drafting credits are a separate line item and easy to overspend"
+    ],
+    "key_features": ["Keyword research", "Content editor with SEO scoring", "Site audit", "AI writing", "Collaboration and approvals", "API"],
+    "platforms": ["Web", "Chrome extension", "Google Workspace", "WordPress"],
+    "integrations": ["Google Docs", "WordPress", "Jasper", "Contentful", "Google Search Console", "Semrush"],
+    "starting_price": "$99 per month",
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Surfer if your main job is publishing articles that rank and you want any writer to follow a repeatable on-page checklist."
+  },
+  {
+    "slug": "semrush",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Reverse engineers a competitor's organic keywords, pages and paid ads",
+      "Keyword Gap and Backlink Gap reports produce a ready to do list",
+      "One subscription covers research, tracking, audit, backlinks and PPC",
+      "Site Audit explains issues in plain language with affected pages",
+      "Looker Studio connector and API allow white labelled agency reports"
+    ],
+    "cons": [
+      "Extra users, keywords and toolkits push the bill up quickly",
+      "Dense interface with overlapping reports takes weeks to learn",
+      "Volume and traffic figures are estimates, not actual numbers",
+      "SEO Writing Assistant is basic next to a dedicated editor"
+    ],
+    "key_features": ["Keyword research", "Rank tracking", "Site audit", "Backlink analysis", "Content editor with SEO scoring", "AI writing", "Social scheduling", "API"],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["Google Analytics", "Google Search Console", "Looker Studio", "Google Ads", "Google Docs", "WordPress", "Trello", "Majestic", "Facebook", "LinkedIn"],
+    "starting_price": "$139.95 per month",
+    "free_tier": true,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Semrush if an in-house team needs competitor research, rank tracking and site audits in one suite with budget to match."
+  },
+  {
+    "slug": "klaviyo",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Order, browse and cart data from the store drives every segment",
+      "Pre-built abandoned cart, welcome and winback flows launch in minutes",
+      "Every campaign and flow reports revenue attributed to actual orders",
+      "SMS consent, quiet hours and two way replies share the email engine",
+      "Predictive next order date and churn risk work as segment conditions"
+    ],
+    "cons": [
+      "Billing by active profiles makes large idle lists expensive",
+      "SMS is billed separately and message volume surprises many brands",
+      "Template editor needs custom HTML for complex layouts",
+      "Little value for B2B or content businesses without transaction data"
+    ],
+    "key_features": ["Email campaigns", "SMS campaigns", "Marketing automation flows", "Segmentation", "A/B testing", "Attribution and analytics", "Templates library", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android", "Shopify"],
+    "integrations": ["Shopify", "WooCommerce", "BigCommerce", "Magento", "Salesforce Commerce Cloud", "Recharge", "Gorgias", "Zendesk", "Facebook", "Google Ads"],
+    "starting_price": "$20 per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick Klaviyo if you run an online store and want email and SMS flows built on real order data with revenue reporting."
+  }
+]

@@ -37,7 +37,7 @@ The platform is explicitly designed for teams that want to stay in Excel. Compan
 
 Dashboards and visual reporting, while functional, are not the platform's strength. Teams that prioritize polished, interactive dashboards for stakeholder consumption may find the visualization layer less refined than dedicated BI tools or FP&A platforms that were designed dashboard-first.
 
-For finance teams open to working in Google Sheets as well as Excel, [Cube](/tools/cubesoftware/) offers a similar spreadsheet-native philosophy with broader spreadsheet platform support and a faster implementation path for smaller organizations.
+For finance teams open to working in Google Sheets as well as Excel, [Cube](/tools/cube/) offers a similar spreadsheet-native philosophy with broader spreadsheet platform support and a faster implementation path for smaller organizations.
 
 ## Conclusion
 

@@ -1,0 +1,225 @@
+[
+  {
+    "slug": "notion",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Databases switch between table, board, calendar and gallery views",
+      "Relations and rollups link tasks, projects and clients without spreadsheets",
+      "Workspace Q&A answers questions with citations to source pages",
+      "Any page publishes to the web in one click",
+      "Free plan is enough for individual use"
+    ],
+    "cons": [
+      "No enforced structure, so workspaces sprawl without an owner",
+      "Large databases with many rollups load slowly",
+      "Offline support is partial and mobile editing lags desktop",
+      "Full AI usage requires a paid plan"
+    ],
+    "key_features": [
+      "Docs and wiki",
+      "Databases and tables",
+      "AI summaries",
+      "Task management",
+      "Search across tools",
+      "Real-time collaboration",
+      "Version history",
+      "Permissions and admin controls",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "macOS",
+      "Windows",
+      "iOS",
+      "Android",
+      "Chrome extension"
+    ],
+    "integrations": [
+      "Slack",
+      "Google Drive",
+      "GitHub",
+      "Jira",
+      "Figma",
+      "Google Calendar",
+      "Microsoft Teams",
+      "Asana",
+      "Zoom"
+    ],
+    "starting_price": "$12 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Notion if you want docs, wiki and project databases in one workspace with AI answers over all of it."
+  },
+  {
+    "slug": "otter",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Transcript appears live during the call, not after processing",
+      "Mobile app records in-person meetings as well as video calls",
+      "Entry paid plan is cheaper than most competitors",
+      "Audio is synced to text so clicking a sentence plays it",
+      "Summaries are short and action items name the right people"
+    ],
+    "cons": [
+      "CRM and project tool integrations are thin",
+      "Strong only in English; mixed language meetings handled poorly",
+      "Bot joins every calendar meeting by default unless changed",
+      "Retention and data residency controls lag enterprise expectations"
+    ],
+    "key_features": [
+      "Meeting transcription",
+      "AI summaries",
+      "Action items and follow-ups",
+      "Calendar integration",
+      "Mobile app",
+      "Real-time collaboration",
+      "Permissions and admin controls"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "Chrome extension"
+    ],
+    "integrations": [
+      "Zoom",
+      "Google Meet",
+      "Microsoft Teams",
+      "Google Calendar",
+      "Slack",
+      "Dropbox"
+    ],
+    "starting_price": "$16.99 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small"
+    ],
+    "verdict_line": "Pick Otter if you want live transcripts and cheap summaries for yourself or a small team without CRM sync."
+  },
+  {
+    "slug": "fireflies",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "CRM syncs attach notes to the right contact and deal",
+      "Search filters every past call by speaker, topic or keyword",
+      "Transcribes dozens of languages for international teams",
+      "Summary templates differ per meeting type",
+      "API and webhooks push transcripts into internal systems"
+    ],
+    "cons": [
+      "Speaker labels drift on calls with more than four people",
+      "Action items include topics merely discussed, not agreed",
+      "Free plan AI summary limits make it mainly a trial",
+      "Interface surfaces many features at once and feels busy"
+    ],
+    "key_features": [
+      "Meeting transcription",
+      "AI summaries",
+      "Action items and follow-ups",
+      "Calendar integration",
+      "Automations and workflows",
+      "Templates",
+      "Mobile app",
+      "Permissions and admin controls",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "macOS",
+      "Windows",
+      "iOS",
+      "Android",
+      "Chrome extension"
+    ],
+    "integrations": [
+      "Salesforce",
+      "HubSpot",
+      "Slack",
+      "Notion",
+      "Asana",
+      "Trello",
+      "Zoom",
+      "Google Meet",
+      "Microsoft Teams",
+      "Google Calendar"
+    ],
+    "starting_price": "$18 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Fireflies if meeting notes must land in Salesforce, HubSpot or your task tracker without manual copying."
+  },
+  {
+    "slug": "zapier",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "App library covers thousands of tools with vendor maintained connectors",
+      "Every step tests against real sample data before going live",
+      "Run history shows data per step and failed runs replay",
+      "AI step classifies, summarises and extracts inside normal Zaps",
+      "Handles authentication, rate limits and retries for you"
+    ],
+    "cons": [
+      "Task based pricing climbs fast on busy triggers",
+      "Polling triggers add minutes of delay on lower plans",
+      "Complex branching Zaps are hard to debug with little versioning",
+      "Tables, Interfaces and Agents are immature next to dedicated tools"
+    ],
+    "key_features": [
+      "Databases and tables",
+      "AI summaries",
+      "Automations and workflows",
+      "Templates",
+      "Permissions and admin controls",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "Chrome extension"
+    ],
+    "integrations": [
+      "Slack",
+      "Google Sheets",
+      "Gmail",
+      "HubSpot",
+      "Salesforce",
+      "Notion",
+      "Airtable",
+      "Trello",
+      "Asana",
+      "Mailchimp"
+    ],
+    "starting_price": "$29.99 per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Zapier if you need two SaaS tools connected this week without an engineer."
+  }
+]

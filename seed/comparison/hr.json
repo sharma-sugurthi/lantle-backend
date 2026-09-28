@@ -1,0 +1,151 @@
+[
+  {
+    "slug": "workable",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "One posting syndicates to 200 plus free and paid job boards",
+      "A non-recruiter can have a role live within an hour",
+      "Scorecards and mentions keep interviewer feedback on the candidate record",
+      "Monthly plans can be paused when you are not hiring",
+      "Calendar sync with Google and Microsoft removes scheduling email threads"
+    ],
+    "cons": [
+      "Reporting stops at pipeline velocity, source and time to fill",
+      "Permissions and process controls are coarse for multi-recruiter teams",
+      "HR modules are shallow compared with a dedicated HRIS",
+      "AI sourcing quality drops sharply for niche roles and locations"
+    ],
+    "key_features": [
+      "Job posting distribution",
+      "Applicant tracking",
+      "Candidate sourcing",
+      "Interview scheduling",
+      "Structured interview kits",
+      "Offer management",
+      "Onboarding workflows",
+      "Reporting and analytics",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["LinkedIn", "Indeed", "Google Workspace", "Microsoft 365", "Slack", "Zoom", "BambooHR", "Checkr", "Codility", "HackerRank"],
+    "starting_price": "$149 per month",
+    "free_tier": false,
+    "trial_days": 15,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Workable if you hire in bursts without a recruiting team and need a role posted everywhere within the hour."
+  },
+  {
+    "slug": "greenhouse",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Interview plans assign each attribute to a named interviewer and scorecard",
+      "Roundup view surfaces evidence per attribute before a hiring decision",
+      "Report builder covers stage conversion, source and interviewer load",
+      "Several hundred marketplace integrations for assessments, checks and HRIS",
+      "Mature Harvest API supports custom internal automations"
+    ],
+    "cons": [
+      "Quote-based annual contracts at the high end of the market",
+      "Implementation takes weeks and needs a configuration owner",
+      "Built-in sourcing is weak, so most customers add a separate tool",
+      "Onboarding and advanced sourcing are priced as separate add-ons"
+    ],
+    "key_features": [
+      "Job posting distribution",
+      "Applicant tracking",
+      "Candidate sourcing",
+      "Interview scheduling",
+      "Structured interview kits",
+      "Offer management",
+      "Onboarding workflows",
+      "Reporting and analytics",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["LinkedIn", "Indeed", "Slack", "Google Workspace", "Microsoft 365", "Zoom", "Workday", "BambooHR", "Checkr", "DocuSign"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Greenhouse if you run multiple recruiters and want every hire scored the same way with defensible reporting."
+  },
+  {
+    "slug": "lattice",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Review cycles combine self, manager, peer and upward input with calibration",
+      "One-on-one agendas carry over action items and pull in recent feedback",
+      "Managers act on reminders inside Slack and Microsoft Teams",
+      "Engagement results show drivers with anonymity thresholds for team dashboards",
+      "Goals feed one-on-ones, reviews and compensation cycles without re-entry"
+    ],
+    "cons": [
+      "Per-employee module pricing adds up quickly past a few hundred people",
+      "HRIS handles records and time off but not complex payroll or benefits",
+      "No applicant tracking, so it sits downstream of a separate ATS",
+      "Cross-module reporting often needs exports for non-standard questions"
+    ],
+    "key_features": [
+      "Performance reviews",
+      "Goals and OKRs",
+      "1:1s and feedback",
+      "Engagement surveys",
+      "Onboarding workflows",
+      "Reporting and analytics",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Slack", "Microsoft Teams"],
+    "integrations": ["Slack", "Microsoft Teams", "Google Calendar", "Outlook", "Workday", "BambooHR", "Rippling", "Gusto", "Okta", "Jira"],
+    "starting_price": "$11 per employee per month",
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Lattice if you want reviews, goals, one-on-ones and engagement surveys feeding each other in one system."
+  },
+  {
+    "slug": "deel",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Employer of record entities in 150 plus countries issue compliant contracts in days",
+      "Contractor invoices approved in bulk and paid in local currency",
+      "Free HRIS covers records, documents, time off and org charts",
+      "Misclassification assessment flags contractors who should be employees",
+      "Local contract templates are kept current as employment law changes"
+    ],
+    "cons": [
+      "Employer of record fees per head become costly past a few people per country",
+      "Standardised benefits packages cannot be tailored to local expectations",
+      "Support quality varies between established and newer country markets",
+      "No applicant tracking and only light performance management"
+    ],
+    "key_features": [
+      "Onboarding workflows",
+      "Performance reviews",
+      "Payroll",
+      "Contractor payments",
+      "Benefits administration",
+      "Employer of record",
+      "Reporting and analytics",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Slack"],
+    "integrations": ["QuickBooks", "Xero", "NetSuite", "Slack", "Greenhouse", "Ashby", "BambooHR", "Workday", "Okta", "Expensify"],
+    "starting_price": "$49 per contractor per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Deel if you pay employees or contractors in several countries and have no local entity in most of them."
+  }
+]

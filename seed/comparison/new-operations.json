@@ -1,0 +1,130 @@
+[
+  {
+    "slug": "cal-com",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Free plan includes unlimited event types and bookings for individuals",
+      "Can be self-hosted, with the full source code open to audit",
+      "Embeddable components and API let you build scheduling into your own product",
+      "Round robin, collective events and routing forms on the team plan"
+    ],
+    "cons": [
+      "Frequent releases bring occasional rough edges and moved settings",
+      "Self-hosting needs engineering time and some features still need a licence",
+      "CRM routing and large-org admin controls trail Calendly"
+    ],
+    "key_features": ["Booking pages", "Round robin and routing", "Reminders and workflows", "Payments collection", "Reporting", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Google Calendar", "Google Meet", "Microsoft Outlook", "Microsoft Teams", "Zoom", "Stripe", "HubSpot", "Salesforce", "Slack", "Zapier"],
+    "starting_price": "$15 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "both",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick Cal.com if you need to self-host scheduling or embed it inside your own product."
+  },
+  {
+    "slug": "zoho-bookings",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Bookings create and update Zoho CRM records without connector work",
+      "Service, staff and resource model suits clinics, salons and multi-location businesses",
+      "Included in Zoho One and priced low per staff member otherwise",
+      "Admin can book on behalf of walk-in and phone customers"
+    ],
+    "cons": [
+      "Booking pages look plainer and take more steps than Calendly or SavvyCal",
+      "No weighted round robin, routing forms or CRM ownership lookup for sales",
+      "Non-Zoho integrations mostly rely on Zoho Flow or Zapier"
+    ],
+    "key_features": ["Booking pages", "Round robin and routing", "Reminders and workflows", "Payments collection", "Reporting", "API"],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Zoho CRM", "Zoho Calendar", "Zoho Meeting", "Zoho SalesIQ", "Google Calendar", "Microsoft Outlook", "Zoom", "Google Meet", "Stripe", "PayPal"],
+    "starting_price": "$6 per staff per month",
+    "free_tier": true,
+    "trial_days": 15,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Zoho Bookings if your business already runs on Zoho CRM and needs staff and service appointment booking."
+  },
+  {
+    "slug": "acuity-scheduling",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Intake forms per appointment type with required and conditional questions",
+      "Sells packages, gift certificates, subscriptions and memberships natively",
+      "Deposits or full payment at booking through Stripe, Square or PayPal",
+      "Classes and group sessions with capacity limits alongside one-on-one bookings",
+      "Multi-staff and multi-location calendars at a small business price"
+    ],
+    "cons": [
+      "No free plan, only a short trial",
+      "No routing forms, CRM lookup or weighted round robin for sales teams",
+      "Admin and client-facing design looks dated next to newer tools",
+      "Integrations beyond calendars, video and payments mostly go through Zapier"
+    ],
+    "key_features": ["Booking pages", "Reminders and workflows", "Payments collection", "Reporting", "API"],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Squarespace", "Google Calendar", "Microsoft Outlook", "iCloud Calendar", "Zoom", "Google Meet", "Stripe", "Square", "PayPal", "Mailchimp"],
+    "starting_price": "$20 per month",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["solo", "small"],
+    "verdict_line": "Pick Acuity Scheduling if you sell appointments and need intake forms, packages and payment at booking."
+  },
+  {
+    "slug": "savvycal",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Recipients overlay their own calendar to pick a time that works for both",
+      "Personalised links and plain language pages make a good impression",
+      "Ranked availability and weekly meeting limits protect your best hours",
+      "HubSpot integration logs meetings and creates contacts natively"
+    ],
+    "cons": [
+      "No free plan, and per user pricing matches Calendly's paid tiers",
+      "Limited Salesforce depth and thin admin tooling for large teams",
+      "Overlay only works when the recipient grants calendar access"
+    ],
+    "key_features": ["Booking pages", "Round robin and routing", "Reminders and workflows", "Payments collection", "API"],
+    "platforms": ["Web", "Chrome extension"],
+    "integrations": ["Google Calendar", "Microsoft Outlook", "Apple Calendar", "Zoom", "Google Meet", "Microsoft Teams", "HubSpot", "Stripe", "Slack"],
+    "starting_price": "$12 per user per month",
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick SavvyCal if the impression your booking link makes on senior prospects and investors matters."
+  },
+  {
+    "slug": "motion",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Schedules tasks into calendar gaps and replans automatically when meetings move",
+      "Tasks, projects and calendar live in one view for small teams",
+      "Booking pages respect protected focus time and task deadlines",
+      "Workload view shows whether an assignee can hit a deadline"
+    ],
+    "cons": [
+      "Booking pages lack routing forms, weighted round robin and CRM lookup",
+      "Automatic planning only works if every task has honest durations and deadlines",
+      "No free plan and per user pricing is high for an individual",
+      "Admin controls and reporting are thin for larger organisations"
+    ],
+    "key_features": ["Booking pages", "Round robin and routing", "Reminders and workflows", "Reporting", "API"],
+    "platforms": ["Web", "macOS", "Windows", "iOS", "Android", "Chrome extension"],
+    "integrations": ["Google Calendar", "Microsoft Outlook", "iCloud Calendar", "Zoom", "Google Meet", "Microsoft Teams", "Zapier"],
+    "starting_price": "$19 per user per month",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Motion if you want your own tasks planned onto the calendar automatically, not just external bookings."
+  }
+]

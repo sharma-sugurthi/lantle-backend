@@ -27,13 +27,14 @@ input,select,textarea{font:inherit;padding:.55rem .7rem;border:1px solid var(--b
 .tool-card .in{padding:.9rem 1.1rem 1.1rem}.tool-card h3{margin:.4rem 0 .2rem;font-size:1.05rem}.stars{color:#d4a017;letter-spacing:.05em}
 .post-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:#fff;max-width:360px}.post-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#eef1ef}.post-card .in{padding:.9rem 1.1rem 1.1rem}
 .prose{max-width:44rem}.prose h2{font-size:1.15rem;margin:1.4rem 0 .4rem}.prose p{margin:0 0 .9rem}.prose a{text-decoration:underline}.prose img{max-width:100%}
+.chks{display:flex;flex-wrap:wrap;gap:.3rem .9rem;margin-top:.3rem}label.chk{display:inline-flex;align-items:center;gap:.35rem;font-weight:400;font-size:.86rem}label.chk input{width:auto}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:.25rem 1rem;font-size:.9rem}.kv dt{color:var(--muted)}.kv dd{margin:0}
 pre{white-space:pre-wrap;word-break:break-word;font-size:.8rem;background:#f0f4f1;padding:.6rem;border-radius:8px}
 `;
 
 const TABS: [string, string][] = [
   ['queue', 'Queue'], ['articles', 'Articles'], ['published', 'Published tools'], ['rejected', 'Rejected tools'],
-  ['orders', 'Orders'], ['messages', 'Messages'], ['subscribers', 'Subscribers'], ['jobs', 'Jobs'],
+  ['comparisons', 'Comparisons'], ['orders', 'Orders'], ['messages', 'Messages'], ['subscribers', 'Subscribers'], ['jobs', 'Jobs'],
 ];
 
 export function layout(title: string, body: string, opts: { tab?: string; flash?: string; flashKind?: 'ok' | 'err'; nav?: boolean } = {}): string {

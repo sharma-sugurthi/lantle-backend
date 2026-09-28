@@ -1,0 +1,131 @@
+[
+  {
+    "slug": "pandadoc",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Pricing tables with optional line items calculate totals before signing",
+      "Documents generate from HubSpot, Salesforce or Pipedrive records with fields prefilled",
+      "Content library and locked blocks keep legal wording consistent across reps",
+      "Recipients can comment in context and pay by card at signature",
+      "Page level analytics show where each recipient spent time"
+    ],
+    "cons": [
+      "Overkill and costly if you only need a signature on a PDF",
+      "Web editor does not round trip with Word tracked changes",
+      "SSO, bulk send and higher API limits sit on top tier or add ons"
+    ],
+    "key_features": ["E-signature", "Templates", "Approval workflows", "Repository and search", "Salesforce integration", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["HubSpot", "Salesforce", "Pipedrive", "Zoho CRM", "monday.com", "Stripe", "Google Drive", "Dropbox", "Slack", "QuickBooks"],
+    "starting_price": "$19 per user per month billed annually",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick PandaDoc if your team builds, prices and signs proposals or quotes from a CRM in one flow."
+  },
+  {
+    "slug": "dropbox-sign",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Send a document for signature within minutes with no training",
+      "Embedded signing API with clear docs, SDKs and a free test mode",
+      "Executed copies land back in the originating Dropbox folder",
+      "Free plan covers occasional signing for freelancers",
+      "Qualified electronic signature support for EU business plans"
+    ],
+    "cons": [
+      "Little feature development since the Dropbox acquisition",
+      "No conditional fields, pre-send approvals or agreement search",
+      "API pricing scales with volume and can exceed web plan cost"
+    ],
+    "key_features": ["E-signature", "Templates", "Word integration", "Salesforce integration", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension", "Word", "Google Workspace", "Slack"],
+    "integrations": ["Dropbox", "Google Drive", "Google Docs", "Gmail", "Microsoft Word", "Slack", "Salesforce", "HubSpot", "Oracle"],
+    "starting_price": "$15 per month billed annually",
+    "free_tier": true,
+    "trial_days": 30,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Dropbox Sign if you want the simplest signing tool or the easiest API to embed signature in your own app."
+  },
+  {
+    "slug": "adobe-acrobat-sign",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Request signatures from Word, Outlook, Teams, SharePoint and Power Automate",
+      "Certifications cover eIDAS qualified signatures, FedRAMP, HIPAA and 21 CFR Part 11",
+      "Government ID, knowledge based and phone authentication for signers",
+      "Workflow designer builds conditional multi step routing without code",
+      "Best PDF rendering and field recognition in the category"
+    ],
+    "cons": [
+      "Bundled into several Acrobat plans, so working out what you get is hard",
+      "Interface feels dated with more clicks per send than rivals",
+      "Interesting features need business or enterprise editions"
+    ],
+    "key_features": ["E-signature", "Templates", "Approval workflows", "Word integration", "Salesforce integration", "API", "SSO"],
+    "platforms": ["Web", "Windows", "macOS", "iOS", "Android", "Word", "Microsoft Teams", "Google Workspace"],
+    "integrations": ["Microsoft 365", "Microsoft Teams", "SharePoint", "Dynamics 365", "Power Automate", "Salesforce", "Workday", "ServiceNow", "SAP", "Box"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Adobe Acrobat Sign if you live in Microsoft 365 and Acrobat and need regulated industry certifications on signing."
+  },
+  {
+    "slug": "signnow",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Conditional fields, calculated fields and signing links on mid tier plans",
+      "Document groups send several files as one signing session",
+      "Collect a Stripe or Authorize.net payment at signature",
+      "Plans do not cap the number of documents sent",
+      "Strong tablet apps for in person signing"
+    ],
+    "cons": [
+      "No free plan, only a short trial",
+      "Less name recognition with enterprise counterparties than DocuSign",
+      "SSO, branding and detailed audit reporting need top tier packaging"
+    ],
+    "key_features": ["E-signature", "Templates", "Salesforce integration", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android", "Microsoft Teams", "Google Workspace", "Chrome extension"],
+    "integrations": ["Salesforce", "HubSpot", "Microsoft 365", "Microsoft Teams", "Dynamics 365", "Google Workspace", "Box", "Dropbox", "NetSuite", "Oracle"],
+    "starting_price": "$8 per user per month billed annually",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick SignNow if you want conditional fields, document groups and payments at a lower per user cost than DocuSign."
+  },
+  {
+    "slug": "jotform-sign",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Signature fields sit inside regular forms so intake and signing are one step",
+      "Approval flows and workflow builder route signed documents without extra tools",
+      "Hundreds of ready made signable templates for leases, waivers and NDAs",
+      "Free plan includes a handful of signed documents each month"
+    ],
+    "cons": [
+      "Signing caps are shared with form submissions and storage limits",
+      "No bulk send or advanced signer identity verification",
+      "CRM document generation is weaker than PandaDoc or DocuSign"
+    ],
+    "key_features": ["E-signature", "Templates", "Approval workflows", "Salesforce integration", "API", "SSO"],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Salesforce", "HubSpot", "Google Drive", "Google Sheets", "Dropbox", "Slack", "Airtable", "Box", "OneDrive", "Zapier"],
+    "starting_price": "$34 per month billed annually",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small"],
+    "verdict_line": "Pick Jotform Sign if you already collect data in Jotform and want signatures, approvals and automations on the same submissions."
+  }
+]

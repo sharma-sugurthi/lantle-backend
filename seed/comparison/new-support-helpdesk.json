@@ -1,0 +1,284 @@
+[
+  {
+    "slug": "help-scout",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Inbox feels like email, so new agents need almost no training",
+      "Docs knowledge base and Beacon widget deflect questions before they become conversations",
+      "Contact based pricing lets the whole company have seats without extra cost",
+      "AI drafts and summaries pull from Docs and past conversations"
+    ],
+    "cons": [
+      "No formal SLA or priority model for contractual response targets",
+      "No native voice channel and no WhatsApp",
+      "Reporting is shallow for larger support operations"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Knowledge base",
+      "Email channel",
+      "Customer and order data in view",
+      "Automations and macros",
+      "CSAT surveys",
+      "Reporting"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Slack",
+      "HubSpot",
+      "Salesforce",
+      "Shopify",
+      "Jira",
+      "Mailchimp",
+      "Trello",
+      "Aircall",
+      "Klaviyo"
+    ],
+    "starting_price": "$50 per month",
+    "free_tier": true,
+    "trial_days": 15,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Help Scout if you want support to feel like well organised email and many part time teammates need seats without per seat fees."
+  },
+  {
+    "slug": "front",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Internal comments and mentions inside the thread beat forwarding between departments",
+      "Rules engine routes by domain, owner, keyword, time or SLA breach",
+      "Salesforce and HubSpot records sit beside every conversation",
+      "Native macOS and Windows apps are fast for all day use",
+      "Email, SMS, WhatsApp, Messenger, Instagram and chat in one view"
+    ],
+    "cons": [
+      "Per seat pricing gets expensive for large high volume agent teams",
+      "SLAs, SSO and advanced analytics only arrive on upper tiers",
+      "No native voice; phone needs Aircall or Dialpad",
+      "Ticket forms and multi brand help centres are basic"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Knowledge base",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Automations and macros",
+      "Reporting"
+    ],
+    "platforms": [
+      "Web",
+      "macOS",
+      "Windows",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Salesforce",
+      "HubSpot",
+      "Slack",
+      "Asana",
+      "Jira",
+      "Shopify",
+      "Aircall",
+      "Dialpad",
+      "Gmail",
+      "Microsoft 365"
+    ],
+    "starting_price": "$19 per seat per month",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Front if support, sales and operations share the same customer threads and most conversations happen over email and messaging."
+  },
+  {
+    "slug": "gorgias",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Refund, cancel or edit Shopify orders without leaving the ticket",
+      "AI Agent reads order data and takes actions, not only answers",
+      "Intent and sentiment detection drive routing and automatic replies",
+      "Native apps for Klaviyo, Recharge, Yotpo, Loop and Aftership",
+      "Ticket based pricing suits small teams with high volume"
+    ],
+    "cons": [
+      "Only makes sense for stores on Shopify, BigCommerce, Magento or WooCommerce",
+      "Ticket tiers and overages make seasonal peaks expensive",
+      "AI Agent resolutions are billed separately from the plan",
+      "Voice is an add-on and reporting is less flexible than Zendesk"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "Help centre",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Voice and phone",
+      "Customer and order data in view",
+      "Automations and macros"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "Shopify"
+    ],
+    "integrations": [
+      "Shopify",
+      "BigCommerce",
+      "Magento",
+      "WooCommerce",
+      "Klaviyo",
+      "Recharge",
+      "Yotpo",
+      "Loop Returns",
+      "Aftership",
+      "Slack"
+    ],
+    "starting_price": "$10 per month",
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Gorgias if you run a direct to consumer store on Shopify or BigCommerce and want agents and AI to act on orders inside the ticket."
+  },
+  {
+    "slug": "kayako",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Customer journey timeline shows page views and events beside the ticket",
+      "SLAs, business hours, escalations and macros cover traditional ticketing needs",
+      "Classic edition can still be self-hosted for regulated environments",
+      "AI drafting trains on your resolved tickets and help centre"
+    ],
+    "cons": [
+      "Pricing is quoted on request rather than published",
+      "Small integration catalogue and slow development pace",
+      "No native voice or WhatsApp and a dated chat widget",
+      "Reporting and mobile apps lag the category leaders"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "Live chat",
+      "AI assist for agents",
+      "Knowledge base",
+      "Help centre",
+      "Email channel",
+      "Automations and macros",
+      "Multilingual",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Salesforce",
+      "Slack",
+      "Jira",
+      "Trello",
+      "Stripe",
+      "Mailchimp",
+      "Facebook",
+      "Twitter"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "both",
+    "company_size": [
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Kayako if you need self-hosted ticketing with SLAs or want AI drafting trained on years of existing Kayako ticket history."
+  },
+  {
+    "slug": "hubspot-service-hub",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Tickets share the CRM record with sales and marketing activity",
+      "Workflow engine automates routing, escalation and follow-ups across objects",
+      "Custom report builder spans tickets, contacts and deals",
+      "Free tier includes ticketing, shared inbox and live chat",
+      "Breeze customer agent answers from knowledge base and website content"
+    ],
+    "cons": [
+      "SLAs, knowledge base, portal and AI agent need the Professional tier",
+      "Seats plus AI credits plus onboarding make total cost hard to predict",
+      "Help desk polish and app marketplace trail Zendesk",
+      "Weak value if you are not already on HubSpot"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Knowledge base",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Chatbot builder",
+      "Automations and macros"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "Chrome extension"
+    ],
+    "integrations": [
+      "Salesforce",
+      "Slack",
+      "Jira",
+      "Shopify",
+      "Gmail",
+      "Outlook",
+      "Zoom",
+      "Aircall",
+      "Stripe",
+      "WhatsApp"
+    ],
+    "starting_price": "$15 per seat per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick HubSpot Service Hub if sales and marketing already run on HubSpot and you want support tickets on the same customer record."
+  }
+]

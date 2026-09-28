@@ -1,0 +1,279 @@
+[
+  {
+    "slug": "windsurf",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Cascade agent edits across files, runs commands and reads the output",
+      "Cheaper Pro plan than Cursor with a usable free credit allowance",
+      "Previews let you click a rendered element and send it as context",
+      "Switch between several providers' models plus cheaper in-house models per request",
+      "Hybrid enterprise deployment keeps indexing and inference in your own cloud"
+    ],
+    "cons": [
+      "Credit multipliers per model make the monthly allowance hard to predict",
+      "JetBrains and Neovim plugins get completions and chat, not full Cascade",
+      "Ownership and pricing changed repeatedly in 2025"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Terminal and command execution",
+      "Choice of models",
+      "Self-hosted or on-prem option",
+      "VS Code plugin",
+      "JetBrains plugin",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": [
+      "macOS",
+      "Windows",
+      "Linux",
+      "VS Code",
+      "JetBrains"
+    ],
+    "integrations": [
+      "GitHub",
+      "Netlify",
+      "Neovim",
+      "Vim",
+      "Emacs",
+      "Visual Studio",
+      "Eclipse"
+    ],
+    "starting_price": "$15 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "both",
+    "company_size": [
+      "solo",
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Windsurf if you want a Cursor-style agentic editor at a lower monthly price and can tolerate a credit-based allowance."
+  },
+  {
+    "slug": "zed",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "GPU-rendered Rust editor opens large repos and files without stutter",
+      "Bring your own API keys or a local model at no extra charge",
+      "Agent panel shows every change as a per-hunk reviewable diff",
+      "External agents like Claude Code run inside the editor via ACP",
+      "Built-in pair programming with shared cursors and voice"
+    ],
+    "cons": [
+      "Extension ecosystem is far smaller than VS Code's",
+      "Windows build arrived later and lags macOS and Linux on polish",
+      "No SSO, admin controls or usage reporting for enterprise rollouts",
+      "Edit prediction is weaker than Cursor's tab completion"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Terminal and command execution",
+      "Choice of models",
+      "Bring your own API key"
+    ],
+    "platforms": [
+      "macOS",
+      "Linux",
+      "Windows"
+    ],
+    "integrations": [
+      "GitHub Copilot",
+      "Claude Code",
+      "Gemini CLI",
+      "Anthropic",
+      "OpenAI",
+      "Google AI",
+      "Ollama",
+      "LM Studio",
+      "OpenRouter"
+    ],
+    "starting_price": "$20 per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small"
+    ],
+    "verdict_line": "Pick Zed if editor speed matters most and you want AI through your own API keys or local models rather than a vendor credit plan."
+  },
+  {
+    "slug": "claude-code",
+    "verified": true,
+    "sources": [
+      "https://claude.com/pricing"
+    ],
+    "pros": [
+      "Runs long multi-step tasks in the terminal, rerunning tests until they pass",
+      "Works with any editor and unattended in CI, not only inside an IDE",
+      "Hooks and permission rules control what it may run without approval",
+      "Project conventions live in versioned markdown files in the repo",
+      "Responds to mentions on GitHub issues and pull requests"
+    ],
+    "cons": [
+      "No free plan; evaluation needs a paid subscription or API credits",
+      "Anthropic models only, so no cross-provider comparison per task",
+      "Not an inline completion tool, so most teams pair it with one",
+      "Metered API use gets expensive on long agent sessions"
+    ],
+    "key_features": [
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Terminal and command execution",
+      "Code review on pull requests",
+      "Bring your own API key",
+      "VS Code plugin",
+      "JetBrains plugin",
+      "CLI",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": [
+      "CLI",
+      "VS Code",
+      "JetBrains",
+      "Web",
+      "macOS",
+      "Windows",
+      "Linux"
+    ],
+    "integrations": [
+      "GitHub",
+      "GitLab",
+      "Slack",
+      "Amazon Bedrock",
+      "Google Vertex AI",
+      "Microsoft Foundry"
+    ],
+    "starting_price": "$20 per month",
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Claude Code if you want an agent you can delegate whole tasks to from the terminal, your IDE and CI rather than an autocomplete."
+  },
+  {
+    "slug": "amazon-q-developer",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Chat inside the AWS console reads your actual resources and IAM policies",
+      "Slash-command agents generate tests and review code in the IDE",
+      "Java upgrade transformation agent handles large legacy migrations",
+      "Free tier works with a Builder ID, no AWS account required",
+      "Pro seats provisioned through IAM Identity Center land on the AWS bill"
+    ],
+    "cons": [
+      "General coding quality trails Cursor and Copilot outside AWS work",
+      "No choice of models; you use what AWS provides",
+      "Overlap with AWS's separate Kiro editor confuses the roadmap",
+      "Builder ID versus Identity Center sign-in trips up new users"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Agent mode (multi-file edits)",
+      "Terminal and command execution",
+      "Test generation",
+      "VS Code plugin",
+      "JetBrains plugin",
+      "CLI",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": [
+      "VS Code",
+      "JetBrains",
+      "CLI",
+      "Web",
+      "Slack",
+      "Microsoft Teams"
+    ],
+    "integrations": [
+      "AWS Management Console",
+      "Visual Studio",
+      "Eclipse",
+      "GitLab",
+      "GitHub",
+      "Slack",
+      "Microsoft Teams",
+      "IAM Identity Center"
+    ],
+    "starting_price": "$19 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Amazon Q Developer if most of your work is on AWS and you want an assistant that understands your account, services and IAM setup."
+  },
+  {
+    "slug": "tabnine",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Runs on-premises, in your VPC or fully air-gapped",
+      "Provenance flags suggestions that match public code and shows the licence",
+      "Switch between Tabnine's protected model and third-party models per team",
+      "First-class JetBrains plugin alongside VS Code, Visual Studio and Eclipse",
+      "Admin console reports usage by user and model"
+    ],
+    "cons": [
+      "Task-specific agents, no iterative multi-file agent like Cursor or Claude Code",
+      "In-house model completions are weaker than frontier providers",
+      "No free plan, so casual evaluation is harder",
+      "Positioning has shifted several times, from autocomplete to privacy to agents"
+    ],
+    "key_features": [
+      "Code completion",
+      "Chat with codebase context",
+      "Test generation",
+      "Choice of models",
+      "Self-hosted or on-prem option",
+      "VS Code plugin",
+      "JetBrains plugin",
+      "Usage analytics",
+      "Enterprise privacy mode",
+      "SSO"
+    ],
+    "platforms": [
+      "VS Code",
+      "JetBrains"
+    ],
+    "integrations": [
+      "Visual Studio",
+      "Eclipse",
+      "Neovim",
+      "GitHub",
+      "GitLab",
+      "Bitbucket",
+      "Jira"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "both",
+    "company_size": [
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Tabnine if your security policy requires an AI assistant that runs on-premises or air-gapped with licence provenance on suggestions."
+  }
+]

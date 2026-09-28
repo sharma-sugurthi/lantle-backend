@@ -1,0 +1,150 @@
+[
+  {
+    "slug": "hubspot-sales-hub",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Emails sent from Gmail or Outlook log to the contact record automatically",
+      "Sequences unenrol prospects on reply and support task and call steps",
+      "Meeting links handle round robin assignment for shared inbound demos",
+      "Custom report builder joins contact, company, deal and activity data",
+      "Free CRM tier lets a two person team start without a consultant"
+    ],
+    "cons": [
+      "Sequences and custom reporting require the pricier Professional tier",
+      "Professional tier carries a mandatory onboarding fee on top of seats",
+      "No built in third party contact data, so prospecting needs another provider",
+      "Complex multi-object models and territory rules are awkward next to Salesforce"
+    ],
+    "key_features": [
+      "Contact database",
+      "Sequences and cadences",
+      "Dialer",
+      "CRM pipeline",
+      "Call recording and transcription",
+      "Forecasting",
+      "Workflow automation",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["Gmail", "Outlook", "Salesforce", "Slack", "Zoom", "Microsoft Teams", "LinkedIn Sales Navigator", "Google Calendar", "Stripe", "Shopify"],
+    "starting_price": "$20 per user per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick HubSpot Sales Hub if you want CRM, email, meetings and sequences from one vendor that reps will actually keep current."
+  },
+  {
+    "slug": "apollo",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Contact database and sequencer in one seat costs less than buying both",
+      "Filters by title, headcount, tech stack, funding and recent hires",
+      "Saved searches surface new matching contacts as the database updates",
+      "Sequences include A/B steps, reply detection and mailbox rotation",
+      "Built in inbox warm-up and domain health checks help deliverability"
+    ],
+    "cons": [
+      "Coverage is thinner outside US technology and services companies",
+      "Mobile numbers are unreliable, so many teams verify with a second source",
+      "Deal tracking is too thin to replace a real CRM",
+      "Generic Apollo templates are widely recognised and underperform"
+    ],
+    "key_features": [
+      "Contact database",
+      "Email finder and verification",
+      "Sequences and cadences",
+      "Dialer",
+      "Data enrichment",
+      "Intent signals",
+      "Call recording and transcription",
+      "CRM sync (Salesforce, HubSpot)",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Chrome extension"],
+    "integrations": ["HubSpot", "Salesforce", "Gmail", "Outlook", "LinkedIn", "Slack", "Outreach", "Salesloft", "Zoom", "Google Calendar"],
+    "starting_price": "$59 per user per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Apollo if you need contact data and sequencing in one affordable seat to launch a first outbound motion."
+  },
+  {
+    "slug": "clay",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Waterfall enrichment cascades through providers and only charges on a hit",
+      "Claygent research columns turn website reads into structured fields",
+      "One table can find, enrich, personalise and push to a sequencer",
+      "Tables run on a schedule so new signals route without manual work",
+      "Public template library covers most common outbound plays"
+    ],
+    "cons": [
+      "Needs a dedicated owner who thinks in tables and logic",
+      "Credit spend is hard to predict until a table has run",
+      "No sequencer, dialer or inbox, so a CRM and sender are still required"
+    ],
+    "key_features": [
+      "Contact database",
+      "Email finder and verification",
+      "Data enrichment",
+      "Intent signals",
+      "Workflow automation",
+      "CRM sync (Salesforce, HubSpot)",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "Chrome extension"],
+    "integrations": ["HubSpot", "Salesforce", "Outreach", "Salesloft", "Apollo", "Smartlead", "Instantly", "Google Sheets", "Slack", "Clearbit"],
+    "starting_price": "$149 per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Clay if a RevOps builder on your team wants to chain many data providers and AI research into custom list workflows."
+  },
+  {
+    "slug": "gong",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Search thousands of calls for a competitor name or objection phrase",
+      "Deal boards flag stalled deals and missing decision makers from call data",
+      "Curated call libraries and scorecards shorten new rep ramp",
+      "Writes captured contacts and activity back to Salesforce and HubSpot",
+      "AI account summaries let leaders prepare without reading full threads"
+    ],
+    "cons": [
+      "Per seat pricing plus platform fee is hard to justify under twenty reps",
+      "Value depends on managers actually reviewing calls each week",
+      "Recording consent needs legal review in Europe and regulated industries",
+      "Engagement tools lag dedicated sequencers like Apollo or Outreach"
+    ],
+    "key_features": [
+      "Sequences and cadences",
+      "Dialer",
+      "Call recording and transcription",
+      "Deal coaching",
+      "Forecasting",
+      "CRM sync (Salesforce, HubSpot)",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Salesforce", "HubSpot", "Zoom", "Microsoft Teams", "Google Meet", "Slack", "Outreach", "Salesloft", "Gmail", "Outlook"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Gong if you have twenty plus reps and managers who will coach from recorded calls every week."
+  }
+]

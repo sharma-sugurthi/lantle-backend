@@ -44,3 +44,10 @@ export const fmtDate = (d: Date | string | null | undefined): string =>
 
 export const money = (cents: number, currency = 'USD'): string =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(cents / 100);
+
+/** One item per line (or comma separated when `commas` is set), trimmed, de-duplicated, capped. Used for pros, cons, platforms and integrations. */
+export const lines = (s: string, max = 10, maxLen = 120, commas = false): string[] =>
+  [...new Set(s.split(commas ? /[\n,]/ : /\r?\n/).map((x) => cleanLine(x, maxLen).replace(/^[-*•]\s*/, '').replace(/[.\s]+$/, '')).filter(Boolean))].slice(0, max);
+
+/** Multi-value form fields arrive as a string (one box) or an array (several boxes). */
+export const multi = (v: unknown): string[] => (Array.isArray(v) ? v.map(String) : typeof v === 'string' && v ? [v] : []);

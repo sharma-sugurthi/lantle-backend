@@ -1,7 +1,7 @@
 /**
  * One-time import of the review markdown into Postgres.
  *
- *   npm run import                       # imports seed/tools (63 reviews) and seed/posts (5 articles) with their images
+ *   npm run import                       # imports seed/tools (reviews), seed/comparison/*.json (comparison data), seed/comparisons.json (editorial verdicts) and seed/posts (articles) with their images
  *   npm run import -- /path/to/seo-tool  # imports a site checkout's src/content/tools and public/tools instead
  *   add --keep-local-thumbnails to skip Storage and keep /tools/<slug>.webp paths (local testing only)
  *
@@ -12,7 +12,9 @@ import path from 'node:path';
 import matter from 'gray-matter';
 import { pool, q, migrate } from '../src/db.js';
 import { uploadFile, uploadThumbnail, storageConfigured } from '../src/lib/storage.js';
-import { isValidCategory } from '../src/taxonomy.js';
+import { isValidCategory, FEATURES } from '../src/taxonomy.js';
+import { saveComparisonFields } from '../src/lib/tools.js';
+import { upsertComparison } from '../src/lib/comparisons.js';
 
 const args = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const keepLocal = process.argv.includes('--keep-local-thumbnails');
@@ -57,6 +59,46 @@ for (const f of files) {
   console.log(`imported ${slug}${thumbnail ? '' : ' (no thumbnail)'}`);
 }
 console.log(`done: ${n} of ${files.length} tools`);
+
+// ---- comparison data: seed/comparison/*.json, one array per file, upserted by slug ----
+const cmpDir = path.join(root, 'seed/comparison');
+if (!args[0] && fs.existsSync(cmpDir)) {
+  let c = 0;
+  let skipped = 0;
+  for (const f of fs.readdirSync(cmpDir).filter((x) => x.endsWith('.json')).sort()) {
+    const items = JSON.parse(fs.readFileSync(path.join(cmpDir, f), 'utf8')) as any[];
+    for (const it of items) {
+      const t = (await q<{ id: string; vertical: string }>('select id, vertical from tools where slug = $1', [it.slug])).rows[0];
+      if (!t) { console.error(`comparison ${f}: no tool with slug ${it.slug}`); skipped++; continue; }
+      const bad = (it.key_features ?? []).filter((x: string) => !(FEATURES[t.vertical] ?? []).includes(x));
+      if (bad.length) { console.error(`comparison ${it.slug}: features outside the ${t.vertical} vocabulary: ${bad.join(', ')}`); skipped++; continue; }
+      await saveComparisonFields(t.id, t.vertical, {
+        pros: it.pros ?? [], cons: it.cons ?? [], key_features: it.key_features ?? [], platforms: it.platforms ?? [], integrations: it.integrations ?? [],
+        starting_price: it.starting_price ?? null, free_tier: typeof it.free_tier === 'boolean' ? it.free_tier : null, trial_days: Number.isInteger(it.trial_days) ? it.trial_days : null,
+        deployment: it.deployment ?? null, company_size: it.company_size ?? [], verdict_line: it.verdict_line ?? null,
+      }, it.verified === true);
+      c++;
+    }
+  }
+  console.log(`done: comparison data for ${c} tools${skipped ? `, ${skipped} skipped` : ''}`);
+}
+
+// ---- editorial verdicts: seed/comparisons.json ----
+const verdictsFile = path.join(root, 'seed/comparisons.json');
+if (!args[0] && fs.existsSync(verdictsFile)) {
+  const items = JSON.parse(fs.readFileSync(verdictsFile, 'utf8')) as any[];
+  let v = 0;
+  for (const it of items) {
+    const both = (await q<{ slug: string }>('select slug from tools where slug = any($1)', [[it.tool_a, it.tool_b]])).rows.length;
+    if (both !== 2) { console.error(`verdict ${it.tool_a} vs ${it.tool_b}: one of the tools is not imported, left as draft`); }
+    await upsertComparison(it.tool_a, it.tool_b, {
+      verdict_md: String(it.verdict_md ?? '').trim(), pick_a_if: it.pick_a_if ?? [], pick_b_if: it.pick_b_if ?? [],
+      winner: it.winner ?? null, winner_reason: it.winner_reason || null, status: both === 2 ? 'published' : 'draft', reviewed_at: it.reviewed_at ?? new Date().toISOString().slice(0, 10),
+    });
+    v++;
+  }
+  console.log(`done: ${v} editorial verdicts`);
+}
 
 // ---- blog posts ----
 const postsDir = args[0] ? path.join(args[0], 'src/content/blog') : path.join(root, 'seed/posts');

@@ -20,12 +20,12 @@ Stack: Node 22, Fastify, Postgres (Supabase), pg-boss job queue, Supabase Storag
 
 1. **Supabase**: new project (free). Copy the **Session pooler** connection string from Project Settings > Database (port 5432). Do not use the transaction pooler on 6543. Create a Storage bucket named `tools`, set it to public. Copy the project URL and the service role key from Project Settings > API.
 2. **Heroku**: create the app, Basic dyno. Connect the GitHub repo or push with the Heroku CLI. Set every variable from `.env.example` as a config var (`heroku config:set KEY=value`). `DATABASE_URL`, `OWNER_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET` and `SITE_URL` are required to boot; everything else can come later.
-3. **Import the 63 reviews** (once, from your machine, with `DATABASE_URL` and the Supabase vars in `.env`):
+3. **Import the reviews** (once, from your machine, with `DATABASE_URL` and the Supabase vars in `.env`):
    ```
    npm install
    npm run import
    ```
-   All 63 reviews, the 5 blog posts and their images ship in `seed/`. The script uploads the thumbnails to Storage and inserts every tool as published. Safe to run again. (`npm run import -- ../seo-tool` imports from a site checkout instead, if you ever keep markdown there again.) Add the 44 missing thumbnails later from the admin, one upload each.
+   All 109 reviews, their comparison data (`seed/comparison/*.json`), the 13 editorial verdicts (`seed/comparisons.json`), the 5 blog posts and their images ship in `seed/`. The script uploads the thumbnails to Storage and upserts every tool by slug as published, so it is safe to run again on a database that already has the first 63. Add missing thumbnails later from the admin, one upload each.
 4. **Site**: in Cloudflare Pages > Settings > Environment variables, set `TOOLS_API_URL=https://<your-app>.herokuapp.com`. Create a deploy hook (Settings > Builds) and paste its URL into `CF_DEPLOY_HOOK_URL` on Heroku. Redeploy the site.
 5. **Dodo Payments**: once approved, create four products (Featured listing $99, Sponsored article $89, Writing add-on $19, Directory package $199), paste the product ids and the API key, add a webhook pointing at `https://<your-app>.herokuapp.com/webhooks/dodo` subscribed to payment and refund events, paste the webhook secret, set `DODO_MODE=live`. Until then paid options still work: the submission is saved, the buyer sees "we will email a payment link", and you get notified.
 6. **Resend**: create the account and an API key. Until your domain is verified, keep `EMAIL_DOMAIN_VERIFIED=false`: only emails to `OWNER_EMAIL` are sent, everything else is logged. When the domain is live, add its DNS records in Resend, set `EMAIL_FROM=hello@yourdomain` and `EMAIL_DOMAIN_VERIFIED=true`.
@@ -47,4 +47,14 @@ The site's `npm run dev` needs `TOOLS_API_URL=http://localhost:3000` in its own 
 - `GET /health` returns `{ ok, payments, storage, emailDomainVerified }`. Point a free uptime monitor at it when you want one.
 - Failed background jobs email you and appear under Admin > Jobs with a retry button.
 - Migrations in `migrations/*.sql` run automatically on boot.
-- Taxonomy lives in `src/taxonomy.ts` here and `src/data/taxonomy.ts` in the site. Change both when adding a vertical.
+- Taxonomy lives in `src/taxonomy.ts` here and `src/data/taxonomy.ts` in the site. Change both when adding a vertical or a feature label.
+
+## Comparison data and verdicts
+
+Every tool carries structured comparison fields (pros, cons, features from a per-vertical vocabulary, platforms, integrations, starting price, free plan, trial, deployment, company size, a one-line verdict). They drive the site's `/tools/compare/a-vs-b/` and `/tools/alternatives/x/` pages and the facts box on each tool page. Submitters fill them in on the submit form and their private edit link; you edit them in the "Comparison data" block on the admin tool page. "Save and mark as checked today" stamps `data_checked_at`, which the site shows as the verification date, so only press it after opening the vendor's pricing page.
+
+The feature matrix shows a tick for a listed feature, a cross only when the tool has feature data and the label is missing, and "not listed" when no data has been captured. Unknown is never shown as a no.
+
+Admin > Comparisons holds hand-written verdicts for pairs with search demand (Power BI vs Tableau, Ramp vs Brex, ...). A pair without a row still gets a full data-driven page. Both tools must be in the same vertical. Featured (paid) placement is never an input to a ranking, a label or a verdict.
+
+Note on the seed data: the research agents could only reach a few vendor sites, so `verified` is true (and `data_checked_at` set) for 3 of 109 tools. The rest is filled from knowledge and shows without a check date until you confirm it in the admin. Start with the tools behind the high-volume pages: Notion, Shopify, Semrush, DocuSign, Intercom, Calendly, Zendesk, Cursor and Tableau alternatives.

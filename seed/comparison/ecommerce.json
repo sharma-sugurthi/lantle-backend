@@ -1,0 +1,139 @@
+[
+  {
+    "slug": "shopify",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Shop Pay checkout finishes returning shoppers in a couple of taps",
+      "App store covers subscriptions, returns and loyalty without custom code",
+      "Theme editor lets non-developers rearrange sections and app blocks",
+      "Sidekick answers questions grounded in your own store data",
+      "Markets handles multi-currency pricing, duties and localised domains"
+    ],
+    "cons": [
+      "Paid apps and gateway fees push real cost well above plan price",
+      "Standard catalogue model strains under complex configurations and B2B pricing",
+      "Native recommendations, bundles and cart upsells need third-party apps",
+      "Built-in inventory reports cannot forecast demand or raise purchase orders"
+    ],
+    "key_features": [
+      "Hosted storefront",
+      "Product catalogue",
+      "Checkout and payments",
+      "Multi-channel inventory",
+      "Marketplace integrations",
+      "Analytics",
+      "App ecosystem",
+      "Themes and templates",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Shopify"],
+    "integrations": ["Meta", "Instagram", "TikTok", "Google", "YouTube", "Pinterest", "Amazon", "Walmart"],
+    "starting_price": "$39 per month",
+    "free_tier": false,
+    "trial_days": 3,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick Shopify if you want a hosted store with a checkout you never maintain and an app for every specialist function."
+  },
+  {
+    "slug": "rebuy",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Rules engine filters recommendations by tag, price band, stock or metafield",
+      "Smart Cart adds shipping progress bars and tiered gifts without theme code",
+      "Built-in A/B testing reports revenue per widget variant",
+      "Recharge integration keeps recommendations aware of subscription status",
+      "Post-purchase offers appear between checkout and the thank-you page"
+    ],
+    "cons": [
+      "Pricing scales with order volume, costly for high-volume thin-margin stores",
+      "Injected JavaScript can slow storefronts already running several apps",
+      "Recommendations stay generic until months of order history accumulate",
+      "Only works on Shopify and Shopify Plus stores"
+    ],
+    "key_features": [
+      "Product recommendations",
+      "Upsell and cross-sell",
+      "Merchandising rules",
+      "Analytics",
+      "API"
+    ],
+    "platforms": ["Web", "Shopify"],
+    "integrations": ["Shopify", "Recharge", "Klaviyo", "Yotpo", "Okendo", "Smile.io", "Skio", "Loop Subscriptions"],
+    "starting_price": "$99 per month",
+    "free_tier": false,
+    "trial_days": 21,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Rebuy if you run a Shopify store with enough order history to feed personalised upsells and a cart worth optimising."
+  },
+  {
+    "slug": "prisync",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Bulk competitor URL upload via spreadsheet gets data within a day",
+      "Alerts fire when a rival changes price, undercuts you or sells out",
+      "Repricing rules respect minimum margin bounds per brand or category",
+      "Competitor stock tracking lets you hold price when rivals sell out",
+      "Repriced values push to Shopify, Magento or WooCommerce automatically"
+    ],
+    "cons": [
+      "Product matching is manual and breaks when competitors change URLs",
+      "Rules are logic-based, no demand elasticity or profit optimisation",
+      "Competitor sites with strong bot protection leave gaps in data",
+      "Nothing for the storefront side such as bundling or recommendations"
+    ],
+    "key_features": [
+      "Competitor price tracking",
+      "Dynamic repricing",
+      "Marketplace integrations",
+      "Analytics",
+      "API"
+    ],
+    "platforms": ["Web", "Shopify"],
+    "integrations": ["Shopify", "Magento", "WooCommerce", "BigCommerce", "Amazon", "Google Shopping"],
+    "starting_price": "$99 per month",
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Prisync if you compete on price across a mid-sized catalogue and need daily competitor data without building scrapers."
+  },
+  {
+    "slug": "inventory-planner",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Replenishment report shows order quantity and date per variant",
+      "Stockout periods are excluded rather than counted as zero demand",
+      "Draft purchase orders group by supplier with MOQ and case packs applied",
+      "Bundles forecast component demand from the kits that consume them",
+      "Overstock reports quantify cash tied up in slow movers"
+    ],
+    "cons": [
+      "Forecasts are weak for new launches, promotions and short-lifecycle ranges",
+      "Volume-based pricing climbs as the store grows",
+      "Dense settings mean accurate setup takes days, mostly on your team",
+      "Planning only, no warehouse management, picking or order routing"
+    ],
+    "key_features": [
+      "Demand forecasting",
+      "Purchase order planning",
+      "Multi-channel inventory",
+      "Marketplace integrations",
+      "Analytics",
+      "API"
+    ],
+    "platforms": ["Web", "Shopify"],
+    "integrations": ["Shopify", "Amazon", "WooCommerce", "BigCommerce", "Magento", "NetSuite", "QuickBooks Online", "Xero", "ShipBob", "Cin7"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Inventory Planner if you reorder a stable multichannel catalogue and want purchase orders built from forecasts, not spreadsheets."
+  }
+]

@@ -1,0 +1,224 @@
+[
+  {
+    "slug": "crisp",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Per-workspace pricing keeps cost flat as the team grows",
+      "WhatsApp, Instagram and Messenger included as standard channels",
+      "Permanent free plan is usable for a solo founder",
+      "Native apps for iOS, Android, macOS and Windows",
+      "REST API, webhooks and JavaScript SDK for user data"
+    ],
+    "cons": [
+      "No ticket lifecycle or SLA management",
+      "Reporting is thin compared with a help desk",
+      "AI agent cannot run multi-step actions against backend systems"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Knowledge base",
+      "Help centre",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Chatbot builder",
+      "API"
+    ],
+    "platforms": [
+      "Web",
+      "macOS",
+      "Windows",
+      "iOS",
+      "Android",
+      "WordPress",
+      "Shopify"
+    ],
+    "integrations": [
+      "Slack",
+      "HubSpot",
+      "Salesforce",
+      "Pipedrive",
+      "Zendesk",
+      "Shopify",
+      "WordPress",
+      "WooCommerce",
+      "Segment",
+      "Telegram"
+    ],
+    "starting_price": null,
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Crisp if you want chat, email, WhatsApp and social in one inbox for a small team without paying per seat."
+  },
+  {
+    "slug": "drift",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Chatbot books meetings on the right rep's calendar",
+      "Identifies target accounts on site and alerts reps",
+      "Playbooks show different flows to named accounts",
+      "Mature Salesforce, HubSpot and Marketo integrations"
+    ],
+    "cons": [
+      "No ticketing, SLAs or knowledge base for support work",
+      "Annual, quote-based contracts priced for sales organisations",
+      "Standalone roadmap uncertain since the Salesloft acquisition"
+    ],
+    "key_features": [
+      "Live chat",
+      "Chatbot builder",
+      "AI agent (autonomous replies)",
+      "Reporting",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "Slack"
+    ],
+    "integrations": [
+      "Salesloft",
+      "Salesforce",
+      "HubSpot",
+      "Marketo",
+      "6sense",
+      "Demandbase",
+      "Slack",
+      "Zoom",
+      "Google Calendar",
+      "Outreach"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Drift if the website chatbot's job is booking sales meetings with target accounts, not resolving support tickets."
+  },
+  {
+    "slug": "ada",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Measured on resolved conversations, not deflections",
+      "Performs backend actions such as order or account changes",
+      "One agent configuration runs across chat, email and voice",
+      "Dozens of languages served from a single knowledge base",
+      "Governance includes audit logs, SSO and pre-release testing"
+    ],
+    "cons": [
+      "Requires a separate help desk for human agents",
+      "Sales-led annual contracts sized for high-volume enterprises",
+      "Implementation takes weeks and a dedicated owner"
+    ],
+    "key_features": [
+      "AI agent (autonomous replies)",
+      "Live chat",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Voice and phone",
+      "Customer and order data in view",
+      "Reporting",
+      "Multilingual",
+      "API",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Zendesk",
+      "Salesforce",
+      "Freshdesk",
+      "Kustomer",
+      "Genesys",
+      "Talkdesk",
+      "Shopify",
+      "Twilio",
+      "Slack"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": [
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Ada if you need an enterprise AI agent that resolves millions of conversations across chat, email and voice on top of your help desk."
+  },
+  {
+    "slug": "freshchat",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "WhatsApp, Instagram and Apple Messages in one inbox",
+      "Free plan covers website chat for a small team",
+      "Bot builder can call APIs and pass context to agents",
+      "Freddy Copilot summarises threads and drafts replies",
+      "Shares contacts and reporting with Freshdesk and Freshsales"
+    ],
+    "cons": [
+      "Freddy AI Agent sessions are a metered add-on",
+      "Packaging overlaps with Freshdesk Omni and confuses buyers",
+      "SLAs and advanced reporting only on upper tiers"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Chatbot builder",
+      "Customer and order data in view",
+      "Reporting",
+      "Multilingual"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "Shopify",
+      "WordPress"
+    ],
+    "integrations": [
+      "Freshdesk",
+      "Freshsales",
+      "Shopify",
+      "Slack",
+      "WhatsApp",
+      "Instagram",
+      "Salesforce",
+      "HubSpot",
+      "Microsoft Teams"
+    ],
+    "starting_price": null,
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Freshchat if you already run Freshdesk and want WhatsApp, social and in-app chat with a bot from the same vendor."
+  }
+]

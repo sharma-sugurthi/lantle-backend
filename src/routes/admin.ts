@@ -7,9 +7,11 @@ import { apiBase, templates } from '../lib/email.js';
 import { layout, stars, statusPill } from '../lib/html.js';
 import { getPost, type PostRow } from '../lib/posts.js';
 import { processPostImage, processThumbnail, uploadFile, uploadThumbnail } from '../lib/storage.js';
-import { clean, cleanLine, esc, fmtDate, money, parseTags, uniqueSlug } from '../lib/text.js';
-import { getTool, grantFeatured, isFeatured, revokeFeatured, type ToolRow } from '../lib/tools.js';
-import { OTHER_CATEGORY, PRICING, VERTICALS, getVertical, isValidCategory } from '../taxonomy.js';
+import { clean, cleanLine, esc, fmtDate, lines, money, multi, parseTags, uniqueSlug } from '../lib/text.js';
+import { dateOnly, getTool, grantFeatured, isFeatured, revokeFeatured, saveComparisonFields, type ComparisonFields, type ToolRow } from '../lib/tools.js';
+import { allComparisons, getComparison, orderPair, upsertComparison, type ComparisonRow } from '../lib/comparisons.js';
+import { comparisonFields } from '../lib/forms.js';
+import { FEATURES, OTHER_CATEGORY, PRICING, VERTICALS, getVertical, isValidCategory } from '../taxonomy.js';
 import { boss, describe, enqueueDeploy, enqueueEmail, Q } from '../queue.js';
 
 const COOKIE = 'lantle_admin';
@@ -75,6 +77,17 @@ export default async function adminRoutes(app: FastifyInstance) {
     } else if (tab === 'published' || tab === 'rejected') {
       const { rows } = await q<ToolRow>(`select * from tools where status = $1 order by ${tab === 'published' ? 'published_at desc nulls last' : 'updated_at desc'} limit 500`, [tab]);
       body = `<div class="row" style="justify-content:space-between"><h1>${tab === 'published' ? 'Published tools' : 'Rejected tools'} <span class="pill grey">${rows.length}</span></h1>${rebuild}</div>${rows.length ? toolsTable(rows) : '<p class="muted">Nothing here.</p>'}`;
+    } else if (tab === 'comparisons') {
+      const rows = await allComparisons();
+      const names = await toolNames(rows.flatMap((c) => [c.tool_a, c.tool_b]));
+      body = `<div class="row" style="justify-content:space-between"><h1>Editorial comparisons <span class="pill grey">${rows.length}</span></h1>
+        <form method="post" action="/admin/comparisons/new" class="row"><input name="tool_a" placeholder="slug a" required style="max-width:12rem"><input name="tool_b" placeholder="slug b" required style="max-width:12rem"><button class="btn sm" type="submit">New verdict</button></form></div>
+        <p class="meta">Every pair of tools already gets a data-driven compare page. A row here adds a hand-written verdict, the pick lists and an optional winner on top. Featured placement never shows here and never affects a verdict.</p>
+        ${rows.length ? `<table><tr><th>Pair</th><th>Winner</th><th>Status</th><th>Reviewed</th><th>Updated</th><th></th></tr>${rows.map((c) => `<tr>
+          <td><a href="/admin/comparisons/${c.id}"><strong>${esc(names.get(c.tool_a) ?? c.tool_a)} vs ${esc(names.get(c.tool_b) ?? c.tool_b)}</strong></a><br><span class="meta">/tools/compare/${esc(c.tool_a)}-vs-${esc(c.tool_b)}/</span></td>
+          <td>${c.winner ? esc(names.get(c.winner) ?? c.winner) : '<span class="muted">no call</span>'}</td><td>${statusPill(c.status)}</td>
+          <td class="meta">${c.reviewed_at ? dateOnly(c.reviewed_at) : '<span class="pill warn">not reviewed</span>'}</td><td class="meta">${fmtDate(c.updated_at)}</td>
+          <td><a class="btn ghost sm" href="/admin/comparisons/${c.id}">Open</a></td></tr>`).join('')}</table>` : '<p class="muted">No editorial verdicts yet.</p>'}`;
     } else if (tab === 'orders') {
       const orders = (await q<any>('select o.*, t.name as tool_name, p.title as post_title, p.id as post_id from orders o left join tools t on t.id = o.tool_id left join posts p on p.order_id = o.id order by o.created_at desc limit 300')).rows;
       body = `<h1>Orders</h1>${orders.length ? `<table><tr><th>When</th><th>What</th><th>Customer</th><th>Amount</th><th>Status</th><th>Ref</th></tr>${orders.map((o: any) => `<tr><td>${fmtDate(o.created_at)}</td><td>${esc(describe(o))}${o.tool_name ? `<br><a href="/admin/tools/${o.tool_id}">${esc(o.tool_name)}</a>` : ''}${o.post_title ? `<br><a href="/admin/posts/${o.post_id}">${esc(o.post_title)}</a>` : ''}</td><td>${esc(o.name ?? '')}<br><span class="meta">${esc(o.email ?? '')}</span></td><td>${money(o.amount_cents, o.currency)}</td><td>${statusPill(o.status)}</td><td class="meta">${esc(o.provider_payment_id ?? o.provider_session_id ?? '')}<br>${esc(o.id)}</td></tr>`).join('')}</table>` : '<p class="muted">No orders yet.</p>'}`;
@@ -131,6 +144,25 @@ export default async function adminRoutes(app: FastifyInstance) {
     const t = await getTool(id);
     if (t?.status === 'published') await enqueueDeploy(`edited ${t.slug}`);
     return go(reply, `/admin/tools/${id}`, t?.status === 'published' ? 'Saved. Rebuild queued.' : 'Saved.');
+  });
+
+  app.post('/admin/tools/:id/comparison', async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const t = await getTool(id);
+    if (!t) return reply.code(404).send('Not found');
+    const b = req.body as Body;
+    const trial = parseInt(str(b, 'trial_days'), 10);
+    const free = str(b, 'free_tier');
+    const f: ComparisonFields = {
+      pros: lines(str(b, 'pros'), 5, 120), cons: lines(str(b, 'cons'), 4, 120), key_features: multi(b['key_features']).slice(0, 12), platforms: multi(b['platforms']),
+      integrations: lines(str(b, 'integrations'), 10, 40, true), starting_price: cleanLine(str(b, 'starting_price'), 60) || null,
+      free_tier: free === 'yes' ? true : free === 'no' ? false : null, trial_days: Number.isFinite(trial) && trial >= 0 && trial <= 365 ? trial : null,
+      deployment: cleanLine(str(b, 'deployment'), 20) || null, company_size: multi(b['company_size']), verdict_line: cleanLine(str(b, 'verdict_line'), 160) || null,
+    };
+    const checked = str(b, 'action') === 'verified';
+    await saveComparisonFields(id, t.vertical, f, checked);
+    if (t.status === 'published') await enqueueDeploy(`comparison data ${t.slug}`);
+    return go(reply, `/admin/tools/${id}#comparison`, checked ? 'Saved and marked as checked today.' : 'Comparison data saved.');
   });
 
   app.post('/admin/tools/:id/thumbnail', async (req, reply) => {
@@ -202,6 +234,51 @@ export default async function adminRoutes(app: FastifyInstance) {
     await q('delete from tools where id = $1', [id]);
     if (t.status === 'published') await enqueueDeploy(`deleted ${t.slug}`);
     return go(reply, '/admin?tab=queue', `${t.name} deleted.`);
+  });
+
+  // ======================= COMPARISONS =======================
+  app.post('/admin/comparisons/new', async (req, reply) => {
+    const b = req.body as Body;
+    const a = cleanLine(str(b, 'tool_a'), 60).toLowerCase();
+    const c = cleanLine(str(b, 'tool_b'), 60).toLowerCase();
+    if (!a || !c || a === c) return go(reply, '/admin?tab=comparisons', 'Two different slugs are required.', true);
+    const found = (await q<{ slug: string; vertical: string }>('select slug, vertical from tools where slug = any($1)', [[a, c]])).rows;
+    if (found.length !== 2) return go(reply, '/admin?tab=comparisons', `Unknown slug: ${found.find((r) => r.slug === a) ? c : a}.`, true);
+    if (found[0].vertical !== found[1].vertical) return go(reply, '/admin?tab=comparisons', 'Both tools must be in the same vertical for a compare page to exist.', true);
+    const row = await upsertComparison(a, c, { verdict_md: '', pick_a_if: [], pick_b_if: [], winner: null, winner_reason: null, status: 'draft', reviewed_at: null });
+    return go(reply, `/admin/comparisons/${row.id}`);
+  });
+
+  app.get('/admin/comparisons/:id', async (req, reply) => {
+    const c = await getComparison((req.params as { id: string }).id);
+    if (!c) return reply.code(404).send('Not found');
+    const names = await toolNames([c.tool_a, c.tool_b]);
+    reply.type('text/html');
+    return layout(`${names.get(c.tool_a) ?? c.tool_a} vs ${names.get(c.tool_b) ?? c.tool_b}`, comparisonPage(c, names), { tab: 'comparisons', ...flashOf(req) });
+  });
+
+  app.post('/admin/comparisons/:id', async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const c = await getComparison(id);
+    if (!c) return reply.code(404).send('Not found');
+    const b = req.body as Body;
+    const action = str(b, 'action');
+    if (action === 'delete') {
+      await q('delete from comparisons where id::text = $1', [id]);
+      await enqueueDeploy(`comparison removed ${c.tool_a} vs ${c.tool_b}`);
+      return go(reply, '/admin?tab=comparisons', 'Verdict deleted. The page falls back to the data-driven version.');
+    }
+    const verdict = String(b['verdict_md'] ?? '').replace(/\r\n?/g, '\n').trim();
+    const status = action === 'publish' ? 'published' : action === 'unpublish' ? 'draft' : c.status;
+    if (status === 'published' && verdict.split(/\s+/).filter(Boolean).length < 80) return go(reply, `/admin/comparisons/${id}`, 'A published verdict needs at least 80 words.', true);
+    const winner = str(b, 'winner') || null;
+    await upsertComparison(c.tool_a, c.tool_b, {
+      verdict_md: verdict, pick_a_if: lines(str(b, 'pick_a_if'), 4, 120), pick_b_if: lines(str(b, 'pick_b_if'), 4, 120),
+      winner, winner_reason: winner ? cleanLine(str(b, 'winner_reason'), 200) || null : null, status,
+      reviewed_at: action === 'publish' || str(b, 'reviewed_today') ? dateOnly(new Date()) : c.reviewed_at ? dateOnly(c.reviewed_at) : null,
+    });
+    if (status === 'published' || c.status === 'published') await enqueueDeploy(`comparison ${c.tool_a} vs ${c.tool_b}`);
+    return go(reply, `/admin/comparisons/${id}`, status === 'published' ? 'Published. Rebuild queued.' : 'Saved as draft.');
   });
 
   // ======================= ARTICLES =======================
@@ -376,6 +453,11 @@ function toolPage(t: ToolRow, orders: any[]): string {
         <label>Private notes <textarea name="notes" rows="3">${esc(t.notes ?? '')}</textarea></label>
         <div class="row"><button class="btn" type="submit">Save</button>${live ? '<span class="meta">Saving a live listing queues a rebuild.</span>' : ''}</div>
       </form>
+      <form class="stack card" method="post" action="/admin/tools/${t.id}/comparison" id="comparison" style="margin-top:1rem">
+        <h2 style="margin-top:0">Comparison data ${t.data_checked_at ? `<span class="pill">checked ${dateOnly(t.data_checked_at)}</span>` : '<span class="pill warn">not checked by a person yet</span>'}</h2>
+        ${comparisonFields(t.vertical, t, true)}
+        <div class="row"><button class="btn" type="submit" name="action" value="save">Save</button><button class="btn ghost" type="submit" name="action" value="verified">Save and mark as checked today</button><span class="meta">The date shows on the compare and alternatives pages, so only mark it after opening the vendor's pricing page.</span></div>
+      </form>
       <div class="card" style="margin-top:1rem">
         <h2 style="margin-top:0">Thumbnail</h2>
         <form method="post" action="/admin/tools/${t.id}/thumbnail" enctype="multipart/form-data" class="row"><input type="file" name="thumbnail" accept="image/png,image/jpeg,image/webp" required style="max-width:20rem"><button class="btn ghost sm" type="submit">Upload</button></form>
@@ -401,9 +483,44 @@ function toolPage(t: ToolRow, orders: any[]): string {
     </div>
   </div>
   <script>
-    const tax = ${taxonomy}; const other = ${JSON.stringify(OTHER_CATEGORY)};
-    document.getElementById('v-sel').addEventListener('change', (e) => { const c = document.getElementById('c-sel'); c.innerHTML = ''; [...(tax[e.target.value] || []), other].forEach((x) => { const o = document.createElement('option'); o.textContent = x; c.appendChild(o); }); });
+    const tax = ${taxonomy}; const other = ${JSON.stringify(OTHER_CATEGORY)}; const feats = ${JSON.stringify(FEATURES)};
+    document.getElementById('v-sel').addEventListener('change', (e) => { const c = document.getElementById('c-sel'); c.innerHTML = ''; [...(tax[e.target.value] || []), other].forEach((x) => { const o = document.createElement('option'); o.textContent = x; c.appendChild(o); });
+      const f = document.getElementById('feat-box'); f.innerHTML = (feats[e.target.value] || []).map((x) => '<label class="chk"><input type="checkbox" name="key_features" value="' + x.replace(/"/g, '&quot;') + '"> ' + x + '</label>').join(''); });
   </script>`;
+}
+
+async function toolNames(slugs: string[]): Promise<Map<string, string>> {
+  if (!slugs.length) return new Map();
+  const { rows } = await q<{ slug: string; name: string }>('select slug, name from tools where slug = any($1)', [[...new Set(slugs)]]);
+  return new Map(rows.map((r) => [r.slug, r.name]));
+}
+
+function comparisonPage(c: ComparisonRow, names: Map<string, string>): string {
+  const na = names.get(c.tool_a) ?? c.tool_a;
+  const nb = names.get(c.tool_b) ?? c.tool_b;
+  const html = marked.parse(c.verdict_md || '_No verdict written yet._') as string;
+  return `
+  <p class="meta"><a href="/admin?tab=comparisons">Back</a></p>
+  <div class="row" style="justify-content:space-between;margin-bottom:1rem"><h1 style="margin:0">${esc(na)} vs ${esc(nb)} ${statusPill(c.status)}</h1>
+    <a class="btn ghost" href="${esc(config.siteUrl)}/tools/compare/${esc(c.tool_a)}-vs-${esc(c.tool_b)}/" target="_blank" rel="noopener">View page</a></div>
+  <div class="two">
+    <form class="stack card" method="post" action="/admin/comparisons/${c.id}">
+      <label>Verdict (markdown) <small>2 to 4 paragraphs: the one-sentence answer and who each is for; the two or three real differences; the trap people fall into; optionally when neither fits. Never mention paid placement or ratings.</small><textarea name="verdict_md" rows="18">${esc(c.verdict_md)}</textarea></label>
+      <div class="two"><label>Pick ${esc(na)} if <small>one per line, 3 to 4</small><textarea name="pick_a_if" rows="5">${esc(c.pick_a_if.join('\n'))}</textarea></label>
+      <label>Pick ${esc(nb)} if <small>one per line, 3 to 4</small><textarea name="pick_b_if" rows="5">${esc(c.pick_b_if.join('\n'))}</textarea></label></div>
+      <div class="two"><label>Winner <small>only when one is clearly the better default for most buyers</small><select name="winner"><option value="">no call</option><option value="${esc(c.tool_a)}" ${c.winner === c.tool_a ? 'selected' : ''}>${esc(na)}</option><option value="${esc(c.tool_b)}" ${c.winner === c.tool_b ? 'selected' : ''}>${esc(nb)}</option></select></label>
+      <label>Why <small>one sentence, shown next to the winner</small><input name="winner_reason" value="${esc(c.winner_reason ?? '')}" maxlength="200"></label></div>
+      <label class="chk"><input type="checkbox" name="reviewed_today" value="1"> Mark as reviewed today${c.reviewed_at ? ` (last: ${dateOnly(c.reviewed_at)})` : ''}</label>
+      <div class="row"><button class="btn ghost" type="submit" name="action" value="save">Save draft</button>
+        ${c.status === 'published' ? '<button class="btn ghost" type="submit" name="action" value="unpublish">Save and unpublish</button>' : ''}
+        <button class="btn" type="submit" name="action" value="publish">Save and publish</button>
+        <button class="btn danger sm" type="submit" name="action" value="delete" onclick="return confirm('Delete this verdict? The page keeps working with the data-driven version.')" style="margin-left:auto">Delete</button></div>
+    </form>
+    <div><h2 style="margin-top:0">Preview</h2><div class="card prose">${html}
+      ${c.pick_a_if.length ? `<h3>Pick ${esc(na)} if</h3><ul>${c.pick_a_if.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${c.pick_b_if.length ? `<h3>Pick ${esc(nb)} if</h3><ul>${c.pick_b_if.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${c.winner ? `<p><strong>Our call: ${esc(names.get(c.winner) ?? c.winner)}.</strong> ${esc(c.winner_reason ?? '')}</p>` : ''}</div></div>
+  </div>`;
 }
 
 function postPage(p: PostRow, order: any): string {

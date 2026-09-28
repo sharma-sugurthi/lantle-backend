@@ -1,0 +1,144 @@
+[
+  {
+    "slug": "ironclad",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "No-code Workflow Designer routes NDAs and vendor contracts without legal touching them",
+      "Smart Import extracts parties, dates and renewal terms from legacy agreements",
+      "AI Assist suggests redlines against your own playbook during review",
+      "Plain language search answers questions across the whole contract base",
+      "First party connectors for Salesforce, Slack, Workday, Coupa and DocuSign"
+    ],
+    "cons": [
+      "Quote based annual contracts with implementation measured in months",
+      "Someone in legal or ops must own building workflows and templates",
+      "Word based negotiation gets a thinner experience than the native editor",
+      "Too heavy for small teams that mainly want faster redlining"
+    ],
+    "key_features": [
+      "Contract drafting assistant",
+      "Clause library and playbooks",
+      "Contract review and redlining",
+      "Repository and search",
+      "Approval workflows",
+      "Templates",
+      "Obligation and renewal tracking",
+      "Word integration",
+      "Salesforce integration",
+      "API"
+    ],
+    "platforms": ["Web", "Word", "Slack"],
+    "integrations": ["Salesforce", "Slack", "Workday", "Coupa", "DocuSign", "Adobe Acrobat Sign", "Microsoft Word"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Ironclad if you need intake, negotiation, signature and repository in one system and can fund a months-long rollout."
+  },
+  {
+    "slug": "spellbook",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Runs inside Word so suggestions land as tracked changes on the open document",
+      "Review mode lists issues with redlines you accept clause by clause",
+      "Playbooks encode your fallback positions instead of generic market terms",
+      "Install the add-in and start on the next matter the same day",
+      "SOC 2 certified and states customer documents do not train models"
+    ],
+    "cons": [
+      "No repository, intake workflow, approval routing or obligations tracking",
+      "Only works in Microsoft Word, not Google Docs or PDF",
+      "Less reliable on unusual or highly specialised agreements",
+      "Per seat cost is hard to justify for occasional drafters"
+    ],
+    "key_features": [
+      "Contract drafting assistant",
+      "Clause library and playbooks",
+      "Contract review and redlining",
+      "Templates",
+      "Word integration"
+    ],
+    "platforms": ["Word", "Windows", "macOS"],
+    "integrations": ["Microsoft Word"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Spellbook if you draft and review contracts in Word every day and want AI redlines without leaving the document."
+  },
+  {
+    "slug": "vanta",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Automated tests run continuously against cloud, identity, HR and device systems",
+      "Controls satisfied for SOC 2 are credited towards ISO 27001 and HIPAA",
+      "Editable policy templates with employee acceptance tracking built in",
+      "Auditors pull evidence inside the platform instead of requesting screenshots",
+      "Trust Center and AI questionnaire answers shorten enterprise security reviews"
+    ],
+    "cons": [
+      "Annual contract cost climbs with each framework, integration and employee",
+      "Custom controls outside supported integrations become manual evidence uploads",
+      "The audit itself is a separate fee paid to the audit firm",
+      "Does not store or track the contracts and DPAs compliance generates"
+    ],
+    "key_features": [
+      "Compliance automation (SOC 2, ISO 27001)",
+      "Continuous control monitoring",
+      "Vendor risk management",
+      "Policy management",
+      "Audit support",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "macOS", "Windows", "Linux"],
+    "integrations": ["AWS", "Google Cloud", "Microsoft Azure", "GitHub", "Okta", "Google Workspace", "Rippling", "Jira", "Slack", "Gusto"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Vanta if a customer has asked for a SOC 2 or ISO 27001 report and you have no compliance hire to produce it."
+  },
+  {
+    "slug": "docusign",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Recipients sign from a browser or phone without creating an account",
+      "Certificate of completion records who signed, when and how they were verified",
+      "Templates and bulk send turn offer letters and NDAs into minutes",
+      "Native connectors for Salesforce, Microsoft 365, Google Workspace, HubSpot and Workday",
+      "Navigator extracts renewal terms from agreements signed anywhere"
+    ],
+    "cons": [
+      "Price jumps sharply between personal and business tiers",
+      "Envelope limits on lower plans are easy to exceed",
+      "AI and workflow features sit on premium plans or enterprise packages",
+      "No clause level review or redlining help for counterparty drafts"
+    ],
+    "key_features": [
+      "E-signature",
+      "Templates",
+      "Repository and search",
+      "Obligation and renewal tracking",
+      "Approval workflows",
+      "Salesforce integration",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Word", "Google Workspace", "Slack", "Microsoft Teams"],
+    "integrations": ["Salesforce", "Microsoft 365", "Google Workspace", "HubSpot", "Workday", "Slack", "Box", "Dropbox", "SAP", "Oracle NetSuite"],
+    "starting_price": "from $15 per month",
+    "free_tier": true,
+    "trial_days": 30,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick DocuSign if you need legally binding signatures that counterparties already trust and the widest integration list."
+  }
+]

@@ -1,0 +1,343 @@
+[
+  {
+    "slug": "anrok",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Nexus monitoring alerts you before a state threshold is crossed",
+      "Tax rules built specifically for SaaS and digital product classification",
+      "Filing and remittance handled end to end across US states",
+      "Native Stripe, Chargebee and Recurly connections calculate tax at checkout"
+    ],
+    "cons": [
+      "Not suited to companies selling physical goods or mixed bundles",
+      "International VAT coverage is shallower than US sales tax support",
+      "Quote based pricing is hard to justify for one or two state sellers"
+    ],
+    "key_features": [
+      "Tax calculation and filing",
+      "Multi-currency",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Reporting dashboards",
+      "API"
+    ],
+    "platforms": ["Web"],
+    "integrations": ["Stripe", "Chargebee", "Recurly", "Maxio", "Zuora", "QuickBooks Online", "NetSuite"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Anrok if you sell software or digital subscriptions across many US states and want nexus tracking, filing and remittance handled for you."
+  },
+  {
+    "slug": "bill",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Multi level approval chains by amount, department or category",
+      "Pays vendors by ACH, virtual card, check or international wire",
+      "Accountant console manages dozens of client accounts from one login",
+      "QuickBooks and NetSuite syncs handle multi subsidiary and multi currency"
+    ],
+    "cons": [
+      "Per user pricing climbs fast when several people approve invoices",
+      "Invoice extraction still needs manual correction on unusual layouts",
+      "Interface feels cluttered next to Stampli or Ramp"
+    ],
+    "key_features": [
+      "Invoice OCR and data extraction",
+      "Approval workflows",
+      "Bill pay",
+      "Corporate cards",
+      "Multi-entity",
+      "Multi-currency",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Audit trail",
+      "Mobile app",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["QuickBooks Online", "QuickBooks Desktop", "Xero", "NetSuite", "Sage Intacct", "Microsoft Dynamics 365"],
+    "starting_price": "$45 per user per month",
+    "free_tier": false,
+    "trial_days": 30,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick BILL if you pay a high volume of vendor bills and need auditable approval chains with broad payment methods in one place."
+  },
+  {
+    "slug": "botkeeper",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Categorisation accuracy improves per client as corrections accumulate",
+      "Exception based review lets staff handle only flagged transactions",
+      "White label client portal carries the firm's own branding",
+      "Portfolio dashboard shows which client books need attention"
+    ],
+    "cons": [
+      "Sold only to accounting firms, not directly to businesses",
+      "Output quality depends on clean chart of accounts at onboarding",
+      "Economics only work for firms with roughly twenty plus clients"
+    ],
+    "key_features": [
+      "Bank feed sync",
+      "Automatic categorisation",
+      "Multi-entity",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Reporting dashboards"
+    ],
+    "platforms": ["Web"],
+    "integrations": ["QuickBooks Online", "Xero"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Botkeeper if you run an accounting firm with twenty or more bookkeeping clients and want to grow the book without proportional hiring."
+  },
+  {
+    "slug": "brex",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "AI policy checks auto approve compliant expenses and flag exceptions",
+      "Issues cards in local currency across dozens of countries",
+      "Travel booking lives inside the same approval and coding flow",
+      "Budgets enforce limits at card level before spend happens",
+      "Transactions sync to NetSuite and Intacct with GL codes attached"
+    ],
+    "cons": [
+      "Underwriting may decline or cap early stage companies with thin cash",
+      "Configuring policies, entities and ERP sync takes weeks not days",
+      "US only teams with little travel get more from Ramp"
+    ],
+    "key_features": [
+      "Corporate cards",
+      "Bill pay",
+      "Expense reimbursement",
+      "Approval workflows",
+      "Multi-entity",
+      "Multi-currency",
+      "Budgeting",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Mobile app",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android", "Slack"],
+    "integrations": ["NetSuite", "QuickBooks Online", "Xero", "Sage Intacct", "Slack", "Okta", "Rippling", "Gusto"],
+    "starting_price": "$12 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Brex if you need corporate cards, travel and expenses working across multiple countries with policy checks done by software."
+  },
+  {
+    "slug": "chaser",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Reminder sequences escalate in tone and send from your own domain",
+      "Tracks opens, clicks and promises to pay per invoice",
+      "Payment prediction ranks which customers are likely to pay late",
+      "Invoice and payment status sync both ways with Xero, QuickBooks and Sage"
+    ],
+    "cons": [
+      "Stops at reminders; no legal letters or third party collections",
+      "Overkill for businesses sending a handful of invoices a month",
+      "Reminders inherit any bad contact data in the ledger"
+    ],
+    "key_features": [
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Multi-currency",
+      "Reporting dashboards",
+      "Audit trail",
+      "Multi-entity"
+    ],
+    "platforms": ["Web"],
+    "integrations": ["Xero", "QuickBooks Online", "Sage 50", "Sage Intacct", "NetSuite", "MYOB", "Stripe", "GoCardless"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Chaser if a small finance team has hundreds of open invoices and wants reminders that read like a person wrote them."
+  },
+  {
+    "slug": "cube",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Works inside Excel and Google Sheets through a live add-in",
+      "First class Google Sheets support, unlike most FP&A tools",
+      "Goes live in weeks rather than a consultant led quarter",
+      "AI variance summaries explain budget to actual movements in plain language"
+    ],
+    "cons": [
+      "Deep intercompany eliminations and allocations outgrow its modelling",
+      "Per company pricing feels steep for a two person finance team",
+      "Datarails keeps more of the workflow inside Excel itself"
+    ],
+    "key_features": [
+      "Forecasting and scenarios",
+      "Budgeting",
+      "Reporting dashboards",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Multi-entity",
+      "Multi-currency",
+      "Audit trail",
+      "SSO"
+    ],
+    "platforms": ["Web", "Google Workspace", "Windows", "macOS"],
+    "integrations": ["QuickBooks Online", "Xero", "NetSuite", "Sage Intacct", "Salesforce", "HubSpot", "Gusto", "Rippling", "Microsoft Excel", "Google Sheets"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Cube if your finance team plans in Google Sheets or Excel and wants a governed model without a months long implementation."
+  },
+  {
+    "slug": "datarails",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Existing Excel models and templates keep working unchanged",
+      "Every spreadsheet edit is versioned and traceable to source data",
+      "Consolidates ERP, CRM, HRIS and spreadsheet data on a schedule",
+      "Conversational AI answers ad hoc variance questions from governed data"
+    ],
+    "cons": [
+      "Quote only pricing slows comparison with other FP&A tools",
+      "Reinforces Excel dependency for teams trying to leave spreadsheets",
+      "Dashboards are functional but less polished than BI tools"
+    ],
+    "key_features": [
+      "Forecasting and scenarios",
+      "Budgeting",
+      "Reporting dashboards",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Multi-entity",
+      "Multi-currency",
+      "Audit trail",
+      "SSO"
+    ],
+    "platforms": ["Web", "Windows"],
+    "integrations": ["NetSuite", "QuickBooks Online", "Sage Intacct", "Microsoft Dynamics 365", "Salesforce", "HubSpot", "Microsoft Excel", "Power BI"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Datarails if your finance team refuses to leave Excel but needs consolidation, version control and an audit trail underneath it."
+  },
+  {
+    "slug": "digits",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Categorisation and reconciliation run continuously, not at month end",
+      "Interactive board reports let readers drill into any number",
+      "AI explains variances and shows why each transaction was coded",
+      "Firm workspace manages several startup clients from one dashboard"
+    ],
+    "cons": [
+      "Far fewer third party apps than QuickBooks or Xero",
+      "Switching ledgers means migrating history and rebuilding integrations",
+      "No free tier, unlike Puzzle for very early startups",
+      "Multi-entity and international consolidation are out of scope"
+    ],
+    "key_features": [
+      "Bank feed sync",
+      "Automatic categorisation",
+      "Bill pay",
+      "Reporting dashboards",
+      "Accounting sync (QuickBooks, Xero, NetSuite)"
+    ],
+    "platforms": ["Web"],
+    "integrations": ["Stripe", "Gusto", "QuickBooks Online", "Brex", "Ramp", "Mercury"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small"],
+    "verdict_line": "Pick Digits if you run a funded startup and want books that are always current with board reports that explain themselves."
+  },
+  {
+    "slug": "docyt",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Rolls up dozens of locations with location level P&L and eliminations",
+      "Matches POS settlements, delivery payouts and tips to bank deposits",
+      "Routes emailed or photographed documents to the right entity and account",
+      "Accounting firm programme allows white label or co-sold delivery"
+    ],
+    "cons": [
+      "Onboarding mappings and POS links need hands on vendor help",
+      "Interface looks dated and report customisation is limited",
+      "Still requires a QuickBooks subscription underneath",
+      "Few prebuilt workflows outside hospitality, retail and franchising"
+    ],
+    "key_features": [
+      "Receipt capture",
+      "Invoice OCR and data extraction",
+      "Bill pay",
+      "Approval workflows",
+      "Multi-entity",
+      "Bank feed sync",
+      "Automatic categorisation",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Reporting dashboards",
+      "Mobile app"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["QuickBooks Online", "Toast", "Square", "Clover", "Shopify"],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid"],
+    "verdict_line": "Pick Docyt if you operate ten or more restaurant, hotel or franchise locations and need POS reconciliation with entity level roll ups."
+  },
+  {
+    "slug": "expensify",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Most employees already know the scan, submit, approve loop",
+      "SmartScan reads merchant, date, amount and currency on the first pass",
+      "Mileage and per diem calculations are built in",
+      "Mature connectors to QuickBooks, Xero, NetSuite and Sage",
+      "Free plan covers basic scanning for freelancers and tiny teams"
+    ],
+    "cons": [
+      "Card controls lag Ramp and Brex, which skip the expense report",
+      "Plan changes have caused surprise price increases for long time customers",
+      "Conditional or matrix approvals need awkward workarounds",
+      "Mobile app works but looks dated beside newer rivals"
+    ],
+    "key_features": [
+      "Receipt capture",
+      "Approval workflows",
+      "Corporate cards",
+      "Bill pay",
+      "Expense reimbursement",
+      "Multi-currency",
+      "Accounting sync (QuickBooks, Xero, NetSuite)",
+      "Mobile app",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["QuickBooks Online", "QuickBooks Desktop", "Xero", "NetSuite", "Sage Intacct", "Gusto", "Workday", "Uber", "Lyft"],
+    "starting_price": "$5 per user per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Expensify if you want the classic expense report workflow done faster by people who need no training."
+  }
+]

@@ -1,0 +1,243 @@
+[
+  {
+    "slug": "looker-studio",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Free for anyone with a Google account, no seat limits",
+      "Native connectors for Google Analytics, Ads, Search Console and Sheets",
+      "Sharing and permissions work exactly like Google Drive",
+      "BigQuery back end makes it a usable front end for Google Cloud data",
+      "Reports embed in websites and intranets with a simple iframe"
+    ],
+    "cons": [
+      "Blended or Sheets-backed reports get slow and can time out",
+      "No shared metrics layer, so definitions drift across reports",
+      "Many non-Google sources need paid third party connectors",
+      "No alerting and limited chart formatting compared with paid BI tools"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Managed connectors",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Row-level security",
+      "Warehouse integration",
+      "API"
+    ],
+    "platforms": ["Web"],
+    "integrations": [
+      "Google Analytics",
+      "Google Ads",
+      "Google BigQuery",
+      "Google Sheets",
+      "Google Search Console",
+      "YouTube Analytics",
+      "Looker",
+      "PostgreSQL",
+      "MySQL",
+      "Google Cloud SQL"
+    ],
+    "starting_price": "$9 per user per project per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Looker Studio if your data lives in Google products and you need shareable dashboards at no cost."
+  },
+  {
+    "slug": "metabase",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Open source edition is free with no user limit",
+      "Question builder lets non-SQL users query tables with filters and summaries",
+      "Runs against Postgres, MySQL, Snowflake, BigQuery and more in minutes",
+      "Interactive embedding puts sandboxed analytics inside your own product",
+      "Dashboard subscriptions and alerts deliver to email and Slack"
+    ],
+    "cons": [
+      "No SaaS connectors, data must already sit in a database or warehouse",
+      "Chart types and formatting are basic next to Tableau",
+      "Sandboxing, SAML SSO and audit logs are paid features",
+      "Paid tiers jump in price steps rather than scaling per seat"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "Self-hosted option",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web"],
+    "integrations": [
+      "PostgreSQL",
+      "MySQL",
+      "Snowflake",
+      "Google BigQuery",
+      "Amazon Redshift",
+      "Databricks",
+      "MongoDB",
+      "ClickHouse",
+      "SQL Server",
+      "Slack"
+    ],
+    "starting_price": "from $85 per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "both",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Metabase if your data is already in a database and you want self-serve dashboards without per-seat licensing."
+  },
+  {
+    "slug": "sisense",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Compose SDK renders analytics as native React components in your product",
+      "ElastiCube models join many messy sources without a warehouse",
+      "Data security rules and API automate per-tenant provisioning",
+      "Runs managed in the cloud or self-hosted on Linux and Windows",
+      "Pulse alerts notify by email, mobile or Slack when KPIs move"
+    ],
+    "cons": [
+      "Quote-only pricing with no free tier or self-serve purchase",
+      "Ad hoc visual exploration is slower than Tableau or Qlik",
+      "ElastiCube builds need memory, scheduling and monitoring",
+      "Roadmap and platform migrations have shifted several times"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Natural language queries",
+      "Managed connectors",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "Self-hosted option",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": [
+      "Snowflake",
+      "Google BigQuery",
+      "Amazon Redshift",
+      "Databricks",
+      "Salesforce",
+      "SQL Server",
+      "PostgreSQL",
+      "MySQL",
+      "Oracle",
+      "Slack"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "both",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Sisense if you are a software vendor embedding customer-facing analytics and need developer-grade SDKs."
+  },
+  {
+    "slug": "qlik-sense",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Associative engine shows excluded values in grey, not just matches",
+      "Section access enforces row-level security inside the data model",
+      "Load script handles incremental loads and transformations at load time",
+      "In-memory engine stays fast on tens of millions of rows",
+      "Available as SaaS or client-managed on Windows servers"
+    ],
+    "cons": [
+      "Set analysis and load script skills take months to learn",
+      "Cloud plans carry a monthly minimum, no small-team pricing",
+      "Default dashboards look plain without manual formatting",
+      "Two deployment models and several licence schemes confuse admins"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Natural language queries",
+      "Managed connectors",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "Self-hosted option",
+      "API"
+    ],
+    "platforms": ["Web", "Windows", "iOS", "Android"],
+    "integrations": [
+      "Snowflake",
+      "Google BigQuery",
+      "Databricks",
+      "Amazon Redshift",
+      "Salesforce",
+      "SAP",
+      "Microsoft Teams",
+      "Slack",
+      "Microsoft Excel",
+      "Azure Synapse"
+    ],
+    "starting_price": "from $825 per month",
+    "free_tier": false,
+    "trial_days": 30,
+    "deployment": "both",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Qlik Sense if users need to explore across many linked tables and you can staff Qlik developers."
+  },
+  {
+    "slug": "domo",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Over a thousand prebuilt connectors to SaaS apps and databases",
+      "Magic ETL lets analysts join and clean data without SQL",
+      "Mobile apps render dashboards and alerts properly on phones",
+      "Personalised data permissions filter every dataset per user",
+      "App Studio adds write-back forms and workflows on top of data"
+    ],
+    "cons": [
+      "Consumption credit pricing is hard to forecast and grows with use",
+      "Cloud-only, no self-hosted option for regulated environments",
+      "Works best with data copied in, duplicating an existing warehouse",
+      "Visual exploration and custom formatting lag Tableau and Qlik"
+    ],
+    "key_features": [
+      "Dashboards and visualisation",
+      "Natural language queries",
+      "Managed connectors",
+      "Transformations (SQL, dbt)",
+      "Scheduling and alerts",
+      "Embedded analytics",
+      "Data modelling and governance",
+      "Row-level security",
+      "Warehouse integration",
+      "API"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": [
+      "Salesforce",
+      "Snowflake",
+      "Google BigQuery",
+      "Google Analytics",
+      "Google Sheets",
+      "Microsoft Excel",
+      "Amazon Redshift",
+      "NetSuite",
+      "HubSpot",
+      "Slack"
+    ],
+    "starting_price": null,
+    "free_tier": false,
+    "trial_days": 30,
+    "deployment": "cloud",
+    "company_size": ["mid", "enterprise"],
+    "verdict_line": "Pick Domo if a business team must connect dozens of SaaS sources and build dashboards without data engineers."
+  }
+]

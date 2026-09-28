@@ -1,0 +1,141 @@
+[
+  {
+    "slug": "midjourney",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Image coherence of light and texture needs little prompt engineering",
+      "Web editor handles inpainting, outpainting and upscaling in one place",
+      "Style and character references keep a campaign set visually consistent",
+      "Explore feed exposes the prompts behind millions of public images"
+    ],
+    "cons": [
+      "No public API, so it cannot sit inside an automated pipeline",
+      "Images are public by default unless you pay for stealth mode",
+      "Exact text, product angles and spatial constraints remain unreliable",
+      "Seats are individual subscriptions with thin team administration"
+    ],
+    "key_features": [
+      "Text to image",
+      "Image editing (inpainting, upscaling)",
+      "Text to video",
+      "Commercial use licence",
+      "Export formats (SVG, PDF, MP4)"
+    ],
+    "platforms": ["Web"],
+    "integrations": ["Discord"],
+    "starting_price": "$10 per month",
+    "free_tier": false,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Midjourney if aesthetic quality of concept and campaign stills matters more than pixel-level control or an API."
+  },
+  {
+    "slug": "runway",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Image-to-video with camera control is usable for social with little iteration",
+      "Background removal and object erase replace hours of manual rotoscoping",
+      "Act-One transfers a recorded performance onto generated characters",
+      "Projects, asset libraries and version history behave like a real editor",
+      "API lets teams build generation into their own products"
+    ],
+    "cons": [
+      "Clips are short and stitching them into a coherent piece is manual",
+      "Credits burn fast because most generated footage gets discarded",
+      "Generated clips arrive silent, so audio happens in another tool",
+      "Rendering slows at busy times on the lower plans"
+    ],
+    "key_features": [
+      "Text to video",
+      "Video editing",
+      "Text to image",
+      "Image editing (inpainting, upscaling)",
+      "Team libraries",
+      "Commercial use licence",
+      "Export formats (SVG, PDF, MP4)",
+      "API"
+    ],
+    "platforms": ["Web", "iOS"],
+    "integrations": [],
+    "starting_price": "$15 per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid"],
+    "verdict_line": "Pick Runway if you need short generated or AI-edited clips inside a proper timeline-style production environment."
+  },
+  {
+    "slug": "elevenlabs",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Narration has natural pacing, breath and emphasis across many languages",
+      "Dubbing studio re-voices a ten minute video into several languages within the hour",
+      "Voice library licensing pays the original speaker and clears commercial use",
+      "Agents platform handles interruptions, tool calling and phone deployment",
+      "API and SDKs cover every capability, not only text to speech"
+    ],
+    "cons": [
+      "Character and minute quotas run out quickly on the lower tiers",
+      "Brand names and acronyms need a maintained pronunciation dictionary",
+      "Emotional direction is indirect and specific reads take several regenerations",
+      "Professional voice cloning requires consent and speaker verification"
+    ],
+    "key_features": [
+      "Voice generation",
+      "Voice cloning",
+      "Dubbing and translation",
+      "Commercial use licence",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "iOS", "Android"],
+    "integrations": ["Twilio", "Adobe Premiere Pro"],
+    "starting_price": "$5 per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["solo", "small", "mid", "enterprise"],
+    "verdict_line": "Pick ElevenLabs if voice is part of your output and you want narration, cloning, dubbing and agents from one vendor."
+  },
+  {
+    "slug": "figma",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Multiple people edit the same file live with comments resolved on canvas",
+      "Variants, auto layout and variables support a consistent multi-team design system",
+      "Dev Mode exposes tokens, measurements and code snippets to engineers",
+      "Layer renaming and background removal save minutes every day",
+      "Plugin ecosystem covers most workflow gaps already"
+    ],
+    "cons": [
+      "Seat types and per-product billing make team cost hard to predict",
+      "AI first drafts produce generic layouts that look like every other product",
+      "Make prototypes are not wired to your design system without setup",
+      "Large files slow down, especially on older laptops"
+    ],
+    "key_features": [
+      "Design canvas and prototyping",
+      "Components and design systems",
+      "Team libraries",
+      "Collaboration and comments",
+      "Templates",
+      "Export formats (SVG, PDF, MP4)",
+      "Text to image",
+      "API",
+      "SSO"
+    ],
+    "platforms": ["Web", "macOS", "Windows", "iOS", "Android"],
+    "integrations": ["Jira", "Slack", "Microsoft Teams", "Confluence", "Notion", "GitHub", "Storybook", "Asana"],
+    "starting_price": "$20 per full seat per month",
+    "free_tier": true,
+    "trial_days": 0,
+    "deployment": "cloud",
+    "company_size": ["small", "mid", "enterprise"],
+    "verdict_line": "Pick Figma if your team designs software interfaces together and needs a shared design system with engineer handoff."
+  }
+]

@@ -1,0 +1,233 @@
+[
+  {
+    "slug": "intercom",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Fin resolves a large share of chat without an agent touching it",
+      "Handover passes transcript, summary and customer attributes to the human",
+      "Fin Tasks call your APIs to complete work, not only answer questions",
+      "Resolution based billing means you pay less when the AI underperforms",
+      "Separate resolution rate and CSAT reporting for AI versus human conversations"
+    ],
+    "cons": [
+      "Seat prices sit at the top of the category before Fin charges",
+      "Fin resolution fees make monthly bills hard to forecast",
+      "Chat first; voice and complex multi department ticketing are thin",
+      "Heavy for small teams that only want a website bot"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Help centre",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Customer and order data in view",
+      "Reporting",
+      "API"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "macOS",
+      "Windows"
+    ],
+    "integrations": [
+      "Salesforce",
+      "Zendesk",
+      "Slack",
+      "HubSpot",
+      "Jira",
+      "Stripe",
+      "Shopify",
+      "WhatsApp",
+      "Segment",
+      "Zapier"
+    ],
+    "starting_price": "$39 per seat per month",
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "small",
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Intercom if you want an AI agent resolving most of your chat volume for a SaaS product with logged-in users."
+  },
+  {
+    "slug": "zendesk",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Every channel including phone and SMS lands as one ticket",
+      "Triggers and automations encode nearly any routing or escalation policy",
+      "Multi brand, skills based routing and custom forms are native",
+      "Zendesk Talk gives IVR, recording and callbacks in the same workspace",
+      "Marketplace of over a thousand integrations extends the core"
+    ],
+    "cons": [
+      "AI copilot and autonomous agents are paid add-ons on top of seats",
+      "Annual contracts and negotiation are expected, awkward for small companies",
+      "Needs a dedicated admin to keep triggers and views from tangling",
+      "Autonomous agent trails Fin on chat heavy conversational quality"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Help centre",
+      "Voice and phone",
+      "Automations and macros",
+      "Reporting",
+      "SSO"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Salesforce",
+      "Slack",
+      "Jira",
+      "Shopify",
+      "HubSpot",
+      "Microsoft Teams",
+      "WhatsApp",
+      "Facebook Messenger",
+      "Instagram",
+      "Stripe"
+    ],
+    "starting_price": "$69 per agent per month",
+    "free_tier": false,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "mid",
+      "enterprise"
+    ],
+    "verdict_line": "Pick Zendesk if you run several channels including phone across multiple teams and need mature ticketing with encoded escalation rules."
+  },
+  {
+    "slug": "freshdesk",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Free plan gives a small team email ticketing and a knowledge base",
+      "Paid tiers with SLAs and reporting cost far less than enterprise desks",
+      "Mailbox, articles and basic automations set up in an afternoon",
+      "Freddy Copilot summaries and rephrasing shave minutes off every ticket",
+      "Automation rules use plain language menus, no dedicated admin needed"
+    ],
+    "cons": [
+      "Custom reports and deeper analytics only arrive on higher plans",
+      "Live chat is Freshchat, a separate product with its own pricing",
+      "Freddy AI Agent handles simple questions but not multi step actions",
+      "Automation engine hits edges with many brands and heavy custom workflows"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Ticketing and SLAs",
+      "AI agent (autonomous replies)",
+      "AI assist for agents",
+      "Knowledge base",
+      "Email channel",
+      "Voice and phone",
+      "Automations and macros",
+      "CSAT surveys",
+      "Reporting"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android"
+    ],
+    "integrations": [
+      "Freshchat",
+      "Freshsales",
+      "Slack",
+      "Microsoft Teams",
+      "Jira",
+      "Shopify",
+      "Salesforce",
+      "HubSpot",
+      "WhatsApp",
+      "Google Workspace"
+    ],
+    "starting_price": "$18 per agent per month",
+    "free_tier": true,
+    "trial_days": 14,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small",
+      "mid"
+    ],
+    "verdict_line": "Pick Freshdesk if a small team needs a real help desk with SLAs and automations at a fraction of enterprise seat prices."
+  },
+  {
+    "slug": "tidio",
+    "verified": false,
+    "sources": [],
+    "pros": [
+      "Lyro crawls your FAQ and answers order questions the same day",
+      "Shopify order and cart details show inside the conversation",
+      "Lyro declines to answer when sources do not match, limiting invented policies",
+      "Visual flow builder triggers on exit intent, cart value or page visits",
+      "Free plan is enough to run a very small site for months"
+    ],
+    "cons": [
+      "No SLAs, ticket lifecycle or serious assignment rules; not a help desk",
+      "Lyro answers from documents but cannot take actions in backend systems",
+      "Lyro conversation limits run out fast on busy sites and add-ons surprise",
+      "Stacked rule based flows produce overlapping pop-ups without pruning"
+    ],
+    "key_features": [
+      "Shared inbox",
+      "Live chat",
+      "AI agent (autonomous replies)",
+      "Email channel",
+      "WhatsApp and social channels",
+      "Chatbot builder",
+      "Customer and order data in view",
+      "Multilingual",
+      "API"
+    ],
+    "platforms": [
+      "Web",
+      "iOS",
+      "Android",
+      "macOS",
+      "Windows",
+      "WordPress",
+      "Shopify"
+    ],
+    "integrations": [
+      "Shopify",
+      "WooCommerce",
+      "WordPress",
+      "Wix",
+      "Facebook Messenger",
+      "Instagram",
+      "WhatsApp",
+      "HubSpot",
+      "Mailchimp",
+      "Klaviyo"
+    ],
+    "starting_price": "$29 per month",
+    "free_tier": true,
+    "trial_days": 7,
+    "deployment": "cloud",
+    "company_size": [
+      "solo",
+      "small"
+    ],
+    "verdict_line": "Pick Tidio if you run an online store and want live chat plus a Lyro bot working on Shopify within minutes, without a support team."
+  }
+]
