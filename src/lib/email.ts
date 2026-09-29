@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { config } from '../config.js';
 import { esc, fmtDate, money } from './text.js';
+import dns from 'node:dns/promises';
 
 /**
  * Every email is one structured object rendered by one layout, so they all look the same:
@@ -93,6 +94,26 @@ const site = () => config.siteName;
 const editLink = (token: string | null | undefined) => (token ? `${apiBase()}/s/${token}` : undefined);
 export const apiBase = (): string => (process.env.API_BASE_URL ?? '').replace(/\/$/, '') || config.siteUrl;
 
+/**
+ * Check that the email domain has at least one MX record.
+ * Returns true if MX records exist (domain can receive mail) or if the DNS lookup times out
+ * (we don't want to block legitimate submissions on a slow DNS day).
+ */
+export async function checkEmailMx(email: string): Promise<boolean> {
+  const domain = email.split('@')[1];
+  if (!domain) return false;
+  try {
+    const records = await Promise.race([
+      dns.resolveMx(domain),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+    ]);
+    return Array.isArray(records) && records.length > 0;
+  } catch {
+    // DNS timeout or NXDOMAIN — give benefit of the doubt on timeout, block on NXDOMAIN
+    return false;
+  }
+}
+
 export const templates = {
   // ---- tools ----
   toolReceived: (d: { to: string; name: string; toolName: string; plan: string; token?: string | null; complete?: boolean }): Mail => ({
@@ -135,6 +156,21 @@ export const templates = {
     details: [['Listing', d.url], ['Placement', d.featured ? 'Featured, 12 months' : 'Basic'], ['Badge', `${config.siteUrl}/badge/`]],
     cta: { label: 'See the listing', url: d.url },
     note: editLink(d.token) ? `Spotted a mistake? Update it here: ${editLink(d.token)}` : 'Spotted a mistake? Reply to this email.',
+  }),
+  /** Fires when a basic (free) listing goes live. Encourages the submitter to fill the Full Profile to unlock the sidebar and comparison pages. */
+  toolBasicLive: (d: { to: string; name: string; toolName: string; url: string; token?: string | null }): Mail => ({
+    to: d.to,
+    subject: `${d.toolName} is live — unlock the full profile`,
+    preheader: 'Your basic listing is published. Fill in the full profile to appear in comparisons and unlock the sidebar.',
+    heading: `${d.toolName} is live`,
+    paragraphs: [
+      `Hi ${d.name || 'there'},`,
+      `Your basic listing is published at the link below. It shows your tagline, screenshot, and pricing.`,
+      `Fill in the full profile — where it shines, where it falls short, a conclusion, and the sidebar data — and ${site()} will add your tool to the "vs" and "alternatives" comparison pages automatically. It takes about 5 minutes.`,
+    ],
+    details: [['Listing', d.url], ['Placement', 'Basic (nofollow link)'], ['Badge', `${config.siteUrl}/badge/`]],
+    cta: editLink(d.token) ? { label: 'Complete the full profile', url: editLink(d.token)! } : { label: 'See the listing', url: d.url },
+    note: 'Keep this link — it is your private edit link for this listing.',
   }),
   toolRejected: (d: { to: string; name: string; toolName: string; reason: string }): Mail => ({
     to: d.to,

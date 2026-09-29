@@ -48,7 +48,7 @@ export const config = {
   // Shown in emails and the admin. Actual charge amounts are set on the products in Dodo.
   prices: {
     featured: { cents: 9900, label: '$99 per year' },
-    sponsored: { cents: 8900, label: '$89 per article' },
+    sponsored: { cents: 12900, label: '$129 per article' },
     writingAddon: { cents: 1900, label: '$19' },
     directoryPackage: { cents: 19900, label: '$199 one time' },
   },

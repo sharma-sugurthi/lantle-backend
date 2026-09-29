@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
 import { q } from '../db.js';
-import { apiBase, templates } from '../lib/email.js';
+import { apiBase, templates, checkEmailMx } from '../lib/email.js';
 import { createCheckout, paymentsConfigured } from '../lib/dodo.js';
 import { publicLayout } from '../lib/html.js';
 import { getPost, postToApi, publishedPosts, type PostRow } from '../lib/posts.js';
@@ -25,11 +25,16 @@ function redirect(reply: FastifyReply, path: string, params: Record<string, stri
   return reply.code(303).redirect(u.toString());
 }
 
-/** Honeypot, bot check, email shape. Returns an error string or null. */
+/** Honeypot, bot check, email shape, and MX record check. Returns an error string or null. */
 async function gate(req: FastifyRequest, b: Body, needEmail = true): Promise<string | null> {
   if (str(b, '_gotcha')) return 'Blocked.';
   if (!(await verifyTurnstile(str(b, 'cf-turnstile-response'), req.ip))) return 'The bot check failed. Please go back and try again.';
-  if (needEmail && !isEmail(cleanLine(str(b, 'email')))) return 'Please enter a valid email address.';
+  if (needEmail) {
+    const email = cleanLine(str(b, 'email')).toLowerCase();
+    if (!isEmail(email)) return 'Please enter a valid email address.';
+    const mxOk = await checkEmailMx(email);
+    if (!mxOk) return 'That email address does not appear to exist. Please use your work email.';
+  }
   return null;
 }
 
@@ -56,6 +61,14 @@ export default async function publicRoutes(app: FastifyInstance) {
   app.get('/health', async () => {
     await q('select 1');
     return { ok: true, payments: paymentsConfigured(), storage: storageConfigured(), emailDomainVerified: config.email.domainVerified };
+  });
+
+  // ---- Email MX check (used by the submit form for live feedback) ----
+  app.get('/api/check-email', { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } }, async (req) => {
+    const { email } = req.query as { email?: string };
+    if (!email || !isEmail(cleanLine(email))) return { valid: false, reason: 'Invalid email format.' };
+    const valid = await checkEmailMx(email.toLowerCase());
+    return { valid, reason: valid ? undefined : 'That email address does not appear to exist. Please use your work email.' };
   });
 
   app.get('/api/tools', async (_req, reply) => {
@@ -170,13 +183,22 @@ export default async function publicRoutes(app: FastifyInstance) {
     const what = clean(str(b, 'what_it_does'), 4000);
     const shines = clean(str(b, 'where_it_shines'), 4000);
     const short = clean(str(b, 'where_it_falls_short'), 4000);
+    const conclusion = clean(str(b, 'conclusion'), 2000);
     if (!isValidCategory(vertical, category, true)) return redirect(reply, '/submitted/', { status: 'error', msg: 'Please pick a category and subcategory.' });
     if (!(PRICING as readonly string[]).includes(pricing)) return redirect(reply, '/submitted/', { status: 'error', msg: 'Please pick a pricing model.' });
-    // A free listing needs the full description now. A featured listing pays first and completes the description from its private link.
-    const complete = tagline.length >= 10 && what.length >= 40 && shines.length >= 40 && short.length >= 20;
-    if (listing !== 'featured' && !complete) {
-      return redirect(reply, '/submitted/', { status: 'error', msg: 'The tagline and the three description answers are required. A sentence or two each is enough.' });
+
+    // Determine profile tier: basic = only core fields filled; full = description sections also provided
+    const isFullProfile = shines.length >= 40 && short.length >= 20;
+    // A free listing needs at minimum a tagline to show on the card
+    if (tagline.length < 5) {
+      return redirect(reply, '/submitted/', { status: 'error', msg: 'A tagline is required (shown on the card in the category page).' });
     }
+    // A featured listing pays first and completes the description from its private link.
+    const complete = tagline.length >= 10 && what.length >= 40 && isFullProfile;
+    if (listing !== 'featured' && !complete && what.length < 40) {
+      return redirect(reply, '/submitted/', { status: 'error', msg: 'Please write at least a couple of sentences in the "What does it do?" field.' });
+    }
+    const profileTier = isFullProfile ? 'full' : 'basic';
     const slug = await uniqueSlug(company);
     let thumbnailUrl: string | null = null;
     try {
@@ -187,11 +209,11 @@ export default async function publicRoutes(app: FastifyInstance) {
       return redirect(reply, '/submitted/', { status: 'error', msg: `Image problem: ${(e as Error).message}` });
     }
     const tool = (await q<{ id: string }>(
-      `insert into tools (slug, name, website, tagline, vertical, category, pricing, best_for, thumbnail_url, body_md, plan, submitter_email, submitter_name, notes, edit_token, listing_complete)
-       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) returning id`,
+      `insert into tools (slug, name, website, tagline, vertical, category, pricing, best_for, thumbnail_url, body_md, plan, submitter_email, submitter_name, notes, edit_token, listing_complete, profile_tier)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) returning id`,
       [slug, company, website, tagline, vertical, category, pricing, cleanLine(str(b, 'best_for'), 120), thumbnailUrl,
-        complete ? bodyFromAnswers(company, { what, shines, short, conclusion: clean(str(b, 'conclusion'), 2000) }) : '',
-        listing === 'featured' ? 'featured' : 'basic', email, submitterName, clean(str(b, 'notes'), 2000) || null, token, complete],
+        complete ? bodyFromAnswers(company, { what, shines, short, conclusion }) : (what.length >= 40 ? bodyFromAnswers(company, { what, shines: '', short: '', conclusion: '' }) : ''),
+        listing === 'featured' ? 'featured' : 'basic', email, submitterName, clean(str(b, 'notes'), 2000) || null, token, complete, profileTier],
     )).rows[0];
     await saveComparisonFields(tool.id, vertical, comparisonFromBody(b), false);
     await enqueueEmail(templates.toolReceived({ to: email, name: submitterName ?? '', toolName: company, plan: listing, token, complete }));
