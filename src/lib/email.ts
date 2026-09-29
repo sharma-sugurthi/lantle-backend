@@ -109,7 +109,7 @@ export async function checkEmailMx(email: string): Promise<boolean> {
     ]);
     return Array.isArray(records) && records.length > 0;
   } catch {
-    // DNS timeout or NXDOMAIN — give benefit of the doubt on timeout, block on NXDOMAIN
+    // DNS timeout or NXDOMAIN - give benefit of the doubt on timeout, block on NXDOMAIN
     return false;
   }
 }
@@ -160,17 +160,17 @@ export const templates = {
   /** Fires when a basic (free) listing goes live. Encourages the submitter to fill the Full Profile to unlock the sidebar and comparison pages. */
   toolBasicLive: (d: { to: string; name: string; toolName: string; url: string; token?: string | null }): Mail => ({
     to: d.to,
-    subject: `${d.toolName} is live — unlock the full profile`,
+    subject: `${d.toolName} is live - unlock the full profile`,
     preheader: 'Your basic listing is published. Fill in the full profile to appear in comparisons and unlock the sidebar.',
     heading: `${d.toolName} is live`,
     paragraphs: [
       `Hi ${d.name || 'there'},`,
       `Your basic listing is published at the link below. It shows your tagline, screenshot, and pricing.`,
-      `Fill in the full profile — where it shines, where it falls short, a conclusion, and the sidebar data — and ${site()} will add your tool to the "vs" and "alternatives" comparison pages automatically. It takes about 5 minutes.`,
+      `Fill in the full profile - where it shines, where it falls short, a conclusion, and the sidebar data - and ${site()} will add your tool to the "vs" and "alternatives" comparison pages automatically. It takes about 5 minutes.`,
     ],
     details: [['Listing', d.url], ['Placement', 'Basic (nofollow link)'], ['Badge', `${config.siteUrl}/badge/`]],
     cta: editLink(d.token) ? { label: 'Complete the full profile', url: editLink(d.token)! } : { label: 'See the listing', url: d.url },
-    note: 'Keep this link — it is your private edit link for this listing.',
+    note: 'Keep this link - it is your private edit link for this listing.',
   }),
   toolRejected: (d: { to: string; name: string; toolName: string; reason: string }): Mail => ({
     to: d.to,
