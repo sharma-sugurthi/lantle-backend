@@ -1,4 +1,4 @@
-import { marked } from 'marked';
+import { renderMarkdown } from './markdown.js';
 import { q } from '../db.js';
 import { dateOnly } from './tools.js';
 
@@ -15,7 +15,7 @@ export function comparisonToApi(c: ComparisonRow) {
   return {
     toolA: c.tool_a,
     toolB: c.tool_b,
-    verdictHtml: marked.parse(c.verdict_md) as string,
+    verdictHtml: renderMarkdown(c.verdict_md),
     verdict: c.verdict_md,
     pickAIf: c.pick_a_if ?? [],
     pickBIf: c.pick_b_if ?? [],

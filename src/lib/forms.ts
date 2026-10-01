@@ -18,6 +18,12 @@ export function comparisonFields(vertical: string, t: Partial<ComparisonFields> 
     <label>Deployment <select name="deployment"><option value="">not sure</option>${DEPLOYMENTS.map((d) => `<option value="${d}" ${t.deployment === d ? 'selected' : ''}>${d}</option>`).join('')}</select></label></div>
     <div><span style="font-weight:600;font-size:.88rem">Company size it fits</span><div class="chks">${check('company_size', COMPANY_SIZES, t.company_size ?? [])}</div></div>
     <label>Verdict line <small>one sentence starting "Pick &lt;name&gt; if", max 160 characters</small><input name="verdict_line" value="${esc(t.verdict_line ?? '')}" maxlength="160"></label>
+  </fieldset>
+  <fieldset class="stack" style="border:1px solid var(--border);border-radius:10px;padding:1rem"><legend style="font-weight:600;padding:0 .4rem">Deal <small class="muted" style="font-weight:400">(optional; one live discount, shown on the tool page, its category and in the API; never a ranking input)</small></legend>
+    <label>Offer <small>e.g. "20% off the first year for Lantle readers", max 120 characters; empty removes the deal</small><input name="deal_text" value="${esc(t.deal_text ?? '')}" maxlength="120"></label>
+    <div class="two"><label>Code <small>optional</small><input name="deal_code" value="${esc(t.deal_code ?? '')}" maxlength="40"></label>
+    <label>Ends <small>optional, the deal disappears the day after</small><input name="deal_until" type="date" value="${esc(typeof t.deal_until === 'string' ? t.deal_until : t.deal_until ? new Date(t.deal_until).toISOString().slice(0, 10) : '')}"></label></div>
+    <label>Landing page <small>https URL where the offer applies; defaults to the website</small><input name="deal_url" type="url" value="${esc(t.deal_url ?? '')}" maxlength="300"></label>
   </fieldset>`;
 }
 

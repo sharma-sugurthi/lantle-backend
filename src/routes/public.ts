@@ -12,12 +12,14 @@ import { orderLinks } from '../queue.js';
 import { comparisonToApi, publishedComparisons } from '../lib/comparisons.js';
 import { comparisonFields } from '../lib/forms.js';
 import { verifyTurnstile } from '../lib/turnstile.js';
+import { safeFetchBytes, UnsafeUrlError } from '../lib/safefetch.js';
 import { VERTICALS, PRICING, OTHER_CATEGORY, FEATURES, PLATFORMS, DEPLOYMENTS, COMPANY_SIZES, getVertical, isValidCategory } from '../taxonomy.js';
 import { enqueueEmail } from '../queue.js';
 
 type Body = Record<string, unknown>;
 const str = (b: Body, k: string) => (typeof b[k] === 'string' ? (b[k] as string) : '');
 const TOKEN_RE = /^[a-f0-9]{48}$/;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function redirect(reply: FastifyReply, path: string, params: Record<string, string> = {}) {
   const u = new URL(path, config.siteUrl);
@@ -44,14 +46,14 @@ async function imageFromSubmission(b: Body, kind: 'tool' | 'post'): Promise<Buff
   const file = b['thumbnail'];
   if (Buffer.isBuffer(file) && file.length > 0) input = file;
   const url = cleanLine(str(b, 'thumbnail_url'), 500);
-  if (!input && /^https:\/\/\S+/.test(url)) {
-    const res = await fetch(url, { signal: AbortSignal.timeout(10_000), headers: { accept: 'image/*' } }).catch(() => null);
-    if (!res || !res.ok) throw new Error('The image URL could not be fetched.');
-    const len = Number(res.headers.get('content-length') ?? 0);
-    if (len > MAX_UPLOAD_BYTES) throw new Error('That image is over 5 MB.');
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > MAX_UPLOAD_BYTES) throw new Error('That image is over 5 MB.');
-    input = buf;
+  if (!input && url) {
+    // Resolved and range-checked first (no internal hosts), no redirects, streamed with a hard 5 MB cap. One generic error
+    // for every failure so the response never doubles as a port or host probe.
+    try {
+      input = await safeFetchBytes(url, { maxBytes: MAX_UPLOAD_BYTES, accept: 'image/*' });
+    } catch (e) {
+      throw new Error(e instanceof UnsafeUrlError && /too large/.test(e.message) ? 'That image is over 5 MB.' : 'The image URL could not be fetched. Upload the file instead.');
+    }
   }
   if (!input) return null;
   return kind === 'tool' ? processThumbnail(input) : (await processPostImage(input)).data;
@@ -133,7 +135,8 @@ export default async function publicRoutes(app: FastifyInstance) {
     const err = await gate(req, b);
     if (err) return redirect(reply, '/submitted/', { status: 'error', msg: err });
 
-    const listing = str(b, 'listing_type') === 'featured' ? 'featured' : str(b, 'listing_type') === 'sponsored' ? 'sponsored' : 'basic';
+    const requested = str(b, 'listing_type');
+    const listing = requested === 'featured' ? 'featured' : requested === 'sponsored' ? 'sponsored' : requested === 'instant' ? 'instant' : 'basic';
     const email = cleanLine(str(b, 'email')).toLowerCase();
     const submitterName = cleanLine(str(b, 'submitter_name'), 100) || null;
     const company = cleanLine(str(b, 'tool_name'), 80);
@@ -193,7 +196,8 @@ export default async function publicRoutes(app: FastifyInstance) {
     if (tagline.length < 5) {
       return redirect(reply, '/submitted/', { status: 'error', msg: 'A tagline is required (shown on the card in the category page).' });
     }
-    // A featured listing pays first and completes the description from its private link.
+    // A featured listing pays first and completes the description from its private link. Instant publish goes live as typed,
+    // so it needs the same fields as a free listing.
     const complete = tagline.length >= 10 && what.length >= 40 && isFullProfile;
     if (listing !== 'featured' && !complete && what.length < 40) {
       return redirect(reply, '/submitted/', { status: 'error', msg: 'Please write at least a couple of sentences in the "What does it do?" field.' });
@@ -219,7 +223,16 @@ export default async function publicRoutes(app: FastifyInstance) {
     await enqueueEmail(templates.toolReceived({ to: email, name: submitterName ?? '', toolName: company, plan: listing, token, complete }));
     await enqueueEmail(templates.ownerNew({ subject: `New ${listing} listing: ${company}`, details: [['Category', `${vertical} / ${category}`], ['Website', website], ['From', `${submitterName ?? ''} <${email}>`]], adminUrl: `${apiBase()}/admin/tools/${tool.id}` }));
 
-    if (listing !== 'featured') return redirect(reply, '/submitted/', { status: 'received', tool: slug });
+    if (listing === 'basic') return redirect(reply, '/submitted/', { status: 'received', tool: slug });
+    if (listing === 'instant') {
+      // Paid skip-the-queue: the payment webhook publishes the tool (see processPaymentEvent) and an editor reads it afterwards.
+      const order = (await q<{ id: string }>("insert into orders (kind, tool_id, email, name, amount_cents) values ('instant', $1, $2, $3, $4) returning id", [tool.id, email, company, config.prices.instant.cents])).rows[0];
+      return startCheckout(reply, {
+        orderId: order.id, toolId: tool.id, email, name: company,
+        cart: [{ product_id: config.dodo.products.instant, quantity: 1 }],
+        returnUrl: `${config.siteUrl}/submitted/?status=paid&kind=instant&o=${order.id}`, fallback: { status: 'received', tool: slug, pay: 'later', o: order.id },
+      });
+    }
     const order = (await q<{ id: string }>("insert into orders (kind, tool_id, email, name, amount_cents) values ('featured', $1, $2, $3, $4) returning id", [tool.id, email, company, config.prices.featured.cents])).rows[0];
     return startCheckout(reply, {
       orderId: order.id, toolId: tool.id, email, name: company,
@@ -296,7 +309,7 @@ export default async function publicRoutes(app: FastifyInstance) {
   // ---- Order status and private links for the thank-you page. The order id is a random uuid and acts as the secret. ----
   app.get('/checkout/order/:id/summary', { config: { rateLimit: { max: 60, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { id } = req.params as { id: string };
-    if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send({ error: 'not found' });
+    if (!UUID_RE.test(id)) return reply.code(404).send({ error: 'not found' });
     const o = (await q<any>('select * from orders where id = $1', [id])).rows[0];
     if (!o) return reply.code(404).send({ error: 'not found' });
     reply.header('cache-control', 'no-store');
@@ -307,13 +320,13 @@ export default async function publicRoutes(app: FastifyInstance) {
   // ---- Re-open the checkout for an order that was never paid (from the thank-you page or the private link) ----
   app.get('/checkout/order/:id', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { id } = req.params as { id: string };
-    if (!/^[0-9a-f-]{36}$/.test(id)) return reply.code(404).send('Not found');
+    if (!UUID_RE.test(id)) return reply.code(404).send('Not found');
     const o = (await q<any>('select * from orders where id = $1', [id])).rows[0];
     if (!o) return reply.code(404).send('Not found');
     if (o.status === 'paid') return redirect(reply, '/submitted/', { status: 'paid', kind: o.kind, o: o.id });
     if (o.status !== 'pending' && o.status !== 'expired' && o.status !== 'failed') return redirect(reply, '/submitted/', { status: 'error', msg: 'This order can no longer be paid. Reply to any email from us for help.' });
     const products = config.dodo.products as Record<string, string>;
-    const map: Record<string, string> = { featured: products.featured, sponsored: products.sponsored, writing_addon: products.writingAddon, directory_package: products.directoryPackage };
+    const map: Record<string, string> = { featured: products.featured, sponsored: products.sponsored, writing_addon: products.writingAddon, directory_package: products.directoryPackage, instant: products.instant };
     const cart = o.kind === 'bundle'
       ? ((o.metadata.items ?? []) as { kind: string; qty: number }[]).map((i) => ({ product_id: map[i.kind], quantity: i.qty }))
       : [{ product_id: map[o.kind], quantity: 1 }, ...(o.kind === 'sponsored' && o.metadata.written_by_us ? [{ product_id: products.writingAddon, quantity: 1 }] : [])];
@@ -325,15 +338,18 @@ export default async function publicRoutes(app: FastifyInstance) {
     });
   });
 
-  app.get('/checkout/directory-package', { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } }, async (req, reply) => {
-    const qs = req.query as Record<string, string>;
-    const email = isEmail(cleanLine(qs.email ?? '')) ? cleanLine(qs.email).toLowerCase() : undefined;
+  // POST only: a GET that creates an order and calls the payment provider can be triggered by any <img src>.
+  app.post('/checkout/directory-package', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const b = (req.body ?? {}) as Body;
+    if (str(b, '_gotcha')) return redirect(reply, '/thanks/', { type: 'error', msg: 'Blocked.' });
+    const email = isEmail(cleanLine(str(b, 'email'))) ? cleanLine(str(b, 'email')).toLowerCase() : undefined;
     const order = (await q<{ id: string }>("insert into orders (kind, email, amount_cents) values ('directory_package', $1, $2) returning id", [email ?? null, config.prices.directoryPackage.cents])).rows[0];
     return startCheckout(reply, { orderId: order.id, email, cart: [{ product_id: config.dodo.products.directoryPackage, quantity: 1 }], returnUrl: `${config.siteUrl}/thanks/?type=directory-package`, fallback: null });
   });
 
-  app.get('/checkout/featured-renewal/:toolId', async (req, reply) => {
+  app.get('/checkout/featured-renewal/:toolId', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (req, reply) => {
     const { toolId } = req.params as { toolId: string };
+    if (!UUID_RE.test(toolId)) return reply.code(404).send('Not found');
     const t = (await q<{ id: string; name: string; slug: string; submitter_email: string | null }>('select id, name, slug, submitter_email from tools where id::text = $1', [toolId])).rows[0];
     if (!t) return reply.code(404).send('Not found');
     const order = (await q<{ id: string }>("insert into orders (kind, tool_id, email, name, amount_cents) values ('featured', $1, $2, $3, $4) returning id", [t.id, t.submitter_email, t.name, config.prices.featured.cents])).rows[0];
@@ -389,7 +405,7 @@ export default async function publicRoutes(app: FastifyInstance) {
         const thumb = img ? await uploadThumbnail(row.slug, img) : null;
         await q(
           `update tools set website=$2, tagline=$3, vertical=$4, category=$5, pricing=$6, best_for=$7, body_md=$8, thumbnail_url=coalesce($9, thumbnail_url),
-             status='pending', review_note=null, listing_complete=true, updated_at=now() where id=$1`,
+             status='pending', review_note=null, listing_complete=true, profile_tier='full', updated_at=now() where id=$1`,
           [row.id, website, tagline, vertical, category, pricing, cleanLine(str(b, 'best_for'), 120), body + '\n', thumb],
         );
         await saveComparisonFields(row.id, vertical, comparisonFromBody(b), false);
@@ -446,6 +462,10 @@ function comparisonFromBody(b: Body): ComparisonFields {
     deployment: cleanLine(str(b, 'deployment'), 20) || null,
     company_size: multi(b['company_size']),
     verdict_line: cleanLine(str(b, 'verdict_line'), 160) || null,
+    deal_text: cleanLine(str(b, 'deal_text'), 120) || null,
+    deal_code: cleanLine(str(b, 'deal_code'), 40) || null,
+    deal_url: cleanLine(str(b, 'deal_url'), 300) || null,
+    deal_until: /^\d{4}-\d{2}-\d{2}$/.test(str(b, 'deal_until')) ? str(b, 'deal_until') : null,
   };
 }
 

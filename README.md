@@ -2,15 +2,17 @@
 
 Submissions, payments, emails and the admin queue for the directory. The site itself stays static on Cloudflare Pages and reads published tools from this API at build time.
 
-Stack: Node 22, Fastify, Postgres (Supabase), pg-boss job queue, Supabase Storage for thumbnails, Dodo Payments, Resend.
+Stack: Node 22, Fastify, Postgres (Supabase), pg-boss job queue, Supabase Storage for thumbnails, Dodo Payments, Resend, Model Context Protocol (MCP) SDK.
 
 ## What it does
 
-- `POST /submissions` takes the submit form (multipart, with an optional screenshot), stores the tool as `pending`, emails you, and for paid plans sends the buyer straight to a Dodo checkout page.
+- `POST /submissions` takes the submit form (multipart, with an optional screenshot), stores the tool as `pending`, emails you, and for paid plans sends the buyer straight to a Dodo checkout page. Supports Free, Instant Publish ($29), and Featured listings.
 - `POST /forms/contact`, `/forms/service-order`, `/forms/guest-pitch`, `/forms/newsletter` replace Formspree. Each redirects back to the site's `/thanks/` page.
 - `GET /checkout/directory-package` starts a checkout for the $199 package.
-- `POST /webhooks/dodo` verifies the signature, stores the event once, and a queued job marks the order paid, grants featured placement, and sends the emails.
+- `POST /webhooks/dodo` verifies the signature, stores the event once, and a queued job marks the order paid, grants featured/instant placement, and sends the emails.
 - `GET /api/tools` and `GET /api/posts` are what the site builds from. `GET /api/tools/counts` feeds the sitemap.
+- **Public API & MCP**: Serves public read-only endpoints at `/api/v1/tools` and provides a Model Context Protocol (MCP) server for Claude/Cursor integration (start with `npm run mcp`).
+- **Deals**: Vendors can add discount codes, which surface in the public API and across the site until they expire.
 - Sponsored articles follow the same path as tools: submitted into the database, edited and approved in the admin, published by a rebuild. Editorial articles are written in the admin too (Articles > New article). No markdown anywhere.
 - Every submitter gets a private edit link (`/s/<token>`) in their emails. While a submission is in review they can update it; "Request changes" in the admin sends them a note with that link; on a live page the link only lets them send a note.
 - `/admin` is the queue. Approve publishes the tool and triggers a Cloudflare rebuild; the submitter gets a "you are live" email a few minutes later.
@@ -19,7 +21,7 @@ Stack: Node 22, Fastify, Postgres (Supabase), pg-boss job queue, Supabase Storag
 ## Setup checklist
 
 1. **Supabase**: new project (free). Copy the **Session pooler** connection string from Project Settings > Database (port 5432). Do not use the transaction pooler on 6543. Create a Storage bucket named `tools`, set it to public. Copy the project URL and the service role key from Project Settings > API.
-2. **Heroku**: create the app, Basic dyno. Connect the GitHub repo or push with the Heroku CLI. Set every variable from `.env.example` as a config var (`heroku config:set KEY=value`). `DATABASE_URL`, `OWNER_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET` and `SITE_URL` are required to boot; everything else can come later.
+2. **Heroku**: create the app, Basic dyno. Connect the GitHub repo or push with the Heroku CLI. Set every variable from `.env.example` as a config var (`heroku config:set KEY=value`). `DATABASE_URL`, `DATABASE_CA`, `OWNER_EMAIL`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `SITE_URL`, `API_BASE_URL` and `TURNSTILE_SECRET` are required to boot in production (the app validates them and names the missing one); everything else can come later. Add a custom domain to the app (`heroku domains:add api.lantle.ai`, then the CNAME it prints) and use that as `API_BASE_URL`: the raw herokuapp.com hostname should never appear in emails or on the site.
 3. **Import the reviews** (once, from your machine, with `DATABASE_URL` and the Supabase vars in `.env`):
    ```
    npm install
@@ -27,7 +29,7 @@ Stack: Node 22, Fastify, Postgres (Supabase), pg-boss job queue, Supabase Storag
    ```
    All 109 reviews, their comparison data (`seed/comparison/*.json`), the 13 editorial verdicts (`seed/comparisons.json`), the 5 blog posts and their images ship in `seed/`. The script uploads the thumbnails to Storage and upserts every tool by slug as published, so it is safe to run again on a database that already has the first 63. Add missing thumbnails later from the admin, one upload each.
 4. **Site**: in Cloudflare Pages > Settings > Environment variables, set `TOOLS_API_URL=https://<your-app>.herokuapp.com`. Create a deploy hook (Settings > Builds) and paste its URL into `CF_DEPLOY_HOOK_URL` on Heroku. Redeploy the site.
-5. **Dodo Payments**: once approved, create four products (Featured listing $99, Sponsored article $89, Writing add-on $19, Directory package $199), paste the product ids and the API key, add a webhook pointing at `https://<your-app>.herokuapp.com/webhooks/dodo` subscribed to payment and refund events, paste the webhook secret, set `DODO_MODE=live`. Until then paid options still work: the submission is saved, the buyer sees "we will email a payment link", and you get notified.
+5. **Dodo Payments**: once approved, create five products with the amounts in `config.prices` (Featured listing $99, Sponsored article $129, Writing add-on $19, Directory package $199, Instant publish $29), paste the product ids and the API key, add a webhook pointing at `https://<your-app>.herokuapp.com/webhooks/dodo` subscribed to payment and refund events, paste the webhook secret, set `DODO_MODE=live`. Until then paid options still work: the submission is saved, the buyer sees "we will email a payment link", and you get notified.
 6. **Resend**: create the account and an API key. Until your domain is verified, keep `EMAIL_DOMAIN_VERIFIED=false`: only emails to `OWNER_EMAIL` are sent, everything else is logged. When the domain is live, add its DNS records in Resend, set `EMAIL_FROM=hello@yourdomain` and `EMAIL_DOMAIN_VERIFIED=true`.
 7. **Turnstile** (recommended): Cloudflare dashboard > Turnstile > add site. Put the secret in `TURNSTILE_SECRET` here and the site key in `site.config.ts` on the site.
 8. Open `https://<your-app>.herokuapp.com/admin`, log in with `ADMIN_PASSWORD`.

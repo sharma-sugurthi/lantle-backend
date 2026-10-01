@@ -1,16 +1,14 @@
 import PgBoss from 'pg-boss';
 import { config } from './config.js';
-import { q } from './db.js';
+import { pgSsl, q } from './db.js';
 import { apiBase, sendMail, templates, type Mail } from './lib/email.js';
 import { fmtDate } from './lib/text.js';
 import { grantFeatured, isFeatured, revokeFeatured, type ToolRow } from './lib/tools.js';
 import type { PostRow } from './lib/posts.js';
 
-const isLocal = /localhost|127\.0\.0\.1/.test(config.databaseUrl);
-
 export const boss = new PgBoss({
   connectionString: config.databaseUrl,
-  ssl: isLocal ? undefined : { rejectUnauthorized: false },
+  ssl: pgSsl() as any,
   max: 3,
   schema: 'pgboss',
 });
@@ -52,6 +50,7 @@ export async function startQueue(): Promise<void> {
   await boss.work(Q.reminders, async () => {
     await sendFeaturedReminders();
     await expirePendingOrders();
+    await requeueStrandedWebhooks();
   });
   await boss.work<any>(Q.dead, async ([job]) => {
     const d = job.data ?? {};
@@ -78,7 +77,11 @@ async function runDeploy(reason: string): Promise<void> {
   // Tell submitters their page is live once the build has had time to finish.
   const tools = (await q<ToolRow>("select * from tools where status = 'published' and live_notified_at is null and submitter_email is not null")).rows;
   for (const t of tools) {
-    await boss.send(Q.email, templates.toolLive({ to: t.submitter_email!, name: t.submitter_name ?? '', toolName: t.name, url: `${config.siteUrl}/tools/${t.slug}/`, featured: isFeatured(t), token: (t as any).edit_token }), { startAfter: 240 });
+    const url = `${config.siteUrl}/tools/${t.slug}/`;
+    const mail = t.profile_tier === 'basic' && !isFeatured(t)
+      ? templates.toolBasicLive({ to: t.submitter_email!, name: t.submitter_name ?? '', toolName: t.name, url, token: t.edit_token })
+      : templates.toolLive({ to: t.submitter_email!, name: t.submitter_name ?? '', toolName: t.name, url, featured: isFeatured(t), token: t.edit_token });
+    await boss.send(Q.email, mail, { startAfter: 240 });
     await q('update tools set live_notified_at = now() where id = $1', [t.id]);
   }
   const posts = (await q<PostRow>("select * from posts where status = 'published' and live_notified_at is null and submitter_email is not null")).rows;
@@ -110,6 +113,13 @@ async function expirePendingOrders(): Promise<void> {
   if (rowCount) console.log(`[orders] expired ${rowCount} unpaid order(s)`);
 }
 
+/** A webhook row whose queue job was never created (send failed after the insert) would otherwise sit unprocessed forever. */
+async function requeueStrandedWebhooks(): Promise<void> {
+  const { rows } = await q<{ id: string }>("select id from webhook_events where processed_at is null and error is null and received_at < now() - interval '10 minutes'");
+  for (const r of rows) await boss.send(Q.payments, { eventId: r.id }, { singletonKey: r.id });
+  if (rows.length) console.log(`[webhooks] re-queued ${rows.length} stranded event(s)`);
+}
+
 /** Private links for everything an order pays for, for the confirmation email and the thank-you page. */
 export async function orderLinks(order: OrderRow): Promise<[string, string][]> {
   const links: [string, string][] = [];
@@ -138,13 +148,15 @@ async function processPaymentEvent(eventId: string): Promise<void> {
     if (ev.type === 'payment.succeeded') {
       const order = await findOrder(meta.order_id, paymentId);
       if (!order) throw new Error(`No order for payment ${paymentId} (order_id ${meta.order_id ?? 'missing'})`);
-      if (order.status !== 'paid') {
-        const paidAt = new Date();
-        await q(
-          `update orders set status = 'paid', paid_at = $5, provider_payment_id = coalesce($2, provider_payment_id),
-             email = coalesce(email, $3), name = coalesce(name, $4) where id = $1`,
-          [order.id, paymentId ?? null, customerEmail ?? null, customerName ?? null, paidAt],
-        );
+      // Atomic claim: only the first event (or retry) to flip the order to paid grants placement and sends emails.
+      // A duplicate webhook or an admin retry finds no row and does nothing, so a 12 month term can never become 24.
+      const paidAt = new Date();
+      const claimed = await q(
+        `update orders set status = 'paid', paid_at = $5, provider_payment_id = coalesce($2, provider_payment_id),
+           email = coalesce(email, $3), name = coalesce(name, $4) where id = $1 and status <> 'paid' returning id`,
+        [order.id, paymentId ?? null, customerEmail ?? null, customerName ?? null, paidAt],
+      );
+      if (claimed.rowCount) {
         let next = 'A person contacts you within one business day.';
         if (order.kind === 'bundle') {
           for (const id of (order.metadata.tool_ids ?? []) as string[]) await grantFeatured(id, config.featuredTermDays);
@@ -156,6 +168,11 @@ async function processPaymentEvent(eventId: string): Promise<void> {
             ? 'Your listing is already live and moves to the top of its category with a dofollow link within a few minutes.'
             : 'Your listing is in the review queue. Featured placement switches on the moment it is approved, usually within five business days.';
           if (t?.status === 'published') await enqueueDeploy(`featured paid for ${t.slug}`);
+        } else if (order.kind === 'instant' && order.tool_id) {
+          // Skip the queue: publish now, rebuild, and let the editor read it from the live list. A decline later refunds.
+          const { rowCount } = await q("update tools set status = 'published', published_at = coalesce(published_at, now()), updated_at = now() where id = $1 and status in ('pending', 'changes_requested')", [order.tool_id]);
+          if (rowCount) await enqueueDeploy(`instant publish paid for ${order.tool_id}`);
+          next = 'Your listing publishes within the next few minutes and is live within 24 hours at the latest. An editor reads it afterwards; if it is declined you are refunded in full.';
         } else if (order.kind === 'sponsored') {
           next = 'The editor confirms a publication date within one business day once the draft is in. Most articles are live within three business days.';
         } else if (order.kind === 'directory_package') {
@@ -201,7 +218,7 @@ async function findOrder(orderId?: string, paymentId?: string): Promise<OrderRow
   return null;
 }
 
-const KIND_LABEL: Record<string, string> = { featured: 'Featured listing (12 months)', sponsored: 'Sponsored article', directory_package: 'Directory and listicle package', writing_addon: 'Writing add-on' };
+const KIND_LABEL: Record<string, string> = { featured: 'Featured listing (12 months)', sponsored: 'Sponsored article', directory_package: 'Directory and listicle package', writing_addon: 'Writing add-on', instant: 'Instant publish' };
 export const describe = (o: { kind: string; metadata?: Record<string, any> }): string => {
   if (o.kind === 'bundle') {
     const items = (o.metadata?.items ?? []) as { kind: string; qty: number }[];

@@ -25,8 +25,9 @@ let resend: Resend | null = null;
 export async function sendMail(mail: Mail): Promise<'sent' | 'skipped' | 'logged'> {
   const to = mail.to.trim().toLowerCase();
   if (!config.email.domainVerified && to !== config.email.owner.toLowerCase()) {
-    console.log(`[email] skipped (domain not verified) to=${to} subject="${mail.subject}"`);
-    return 'skipped';
+    // Fail the job rather than drop it: pg-boss retries with backoff and dead-letters to the owner, so a customer's private
+    // link is never silently lost while the sending domain is still unverified.
+    throw new Error(`Email domain not verified (EMAIL_DOMAIN_VERIFIED=false); cannot send "${mail.subject}" to a customer yet`);
   }
   if (!config.email.resendKey) {
     console.log(`[email] RESEND_API_KEY not set. Would send to=${to} subject="${mail.subject}"\n${renderText(mail)}`);
@@ -92,7 +93,8 @@ export function renderText(m: Mail): string {
 
 const site = () => config.siteName;
 const editLink = (token: string | null | undefined) => (token ? `${apiBase()}/s/${token}` : undefined);
-export const apiBase = (): string => (process.env.API_BASE_URL ?? '').replace(/\/$/, '') || config.siteUrl;
+/** Where private links, renewals and admin links point. Validated in config.ts (mandatory in production). */
+export const apiBase = (): string => config.apiBaseUrl;
 
 /**
  * Check that the email domain has at least one MX record.

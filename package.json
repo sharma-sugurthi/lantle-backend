@@ -11,14 +11,18 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "import": "tsx scripts/import-markdown.ts"
+    "import": "tsx scripts/import-markdown.ts",
+    "mcp": "tsx src/mcp/server.ts"
   },
+  "bin": { "lantle-mcp": "dist/mcp/server.js" },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.0.1",
     "@fastify/formbody": "^8.0.1",
+    "@fastify/helmet": "^13.1.1",
     "@fastify/multipart": "^9.0.1",
     "@fastify/rate-limit": "^10.1.1",
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "@supabase/supabase-js": "^2.45.0",
     "@types/ws": "^8.18.1",
     "dotenv": "^16.4.5",

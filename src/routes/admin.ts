@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { marked } from 'marked';
+import { renderMarkdown } from '../lib/markdown.js';
 import { config } from '../config.js';
 import { q } from '../db.js';
 import { apiBase, templates } from '../lib/email.js';
@@ -25,6 +25,20 @@ const flashOf = (req: FastifyRequest) => {
 };
 const REVIEW = ['pending', 'changes_requested'];
 
+/**
+ * Login lockout that does not depend on the client IP (X-Forwarded-For is attacker controlled, and the rate limiter is per IP).
+ * One shared admin password means one shared counter: after LOCK_AFTER failures every attempt waits out a doubling delay.
+ */
+const LOCK_AFTER = 5;
+const LOCK_BASE_MS = 30_000;
+const LOCK_MAX_MS = 15 * 60_000;
+const lock = { failures: 0, until: 0 };
+const lockedFor = (): number => Math.max(0, lock.until - Date.now());
+const noteFailure = () => {
+  lock.failures++;
+  if (lock.failures >= LOCK_AFTER) lock.until = Date.now() + Math.min(LOCK_MAX_MS, LOCK_BASE_MS * 2 ** (lock.failures - LOCK_AFTER));
+};
+
 export default async function adminRoutes(app: FastifyInstance) {
   // ---- auth ----
   app.get('/admin/login', async (req, reply) => {
@@ -33,10 +47,21 @@ export default async function adminRoutes(app: FastifyInstance) {
       <form class="stack" method="post" action="/admin/login"><label>Password <input type="password" name="password" autofocus required /></label><button class="btn" type="submit">Log in</button></form></div>`, { nav: false, ...flashOf(req) });
   });
   app.post('/admin/login', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (req, reply) => {
+    const wait = lockedFor();
+    if (wait > 0) {
+      req.log.warn({ failures: lock.failures }, 'admin login locked');
+      return go(reply, '/admin/login', `Too many wrong passwords. Try again in ${Math.ceil(wait / 1000)} seconds.`, true);
+    }
     const given = Buffer.from(str(req.body as Body, 'password'));
     const want = Buffer.from(config.admin.password);
     const ok = given.length === want.length && crypto.timingSafeEqual(given, want);
-    if (!ok) return go(reply, '/admin/login', 'Wrong password.', true);
+    if (!ok) {
+      noteFailure();
+      req.log.warn({ failures: lock.failures }, 'admin login failed');
+      return go(reply, '/admin/login', 'Wrong password.', true);
+    }
+    lock.failures = 0;
+    lock.until = 0;
     const token = crypto.randomBytes(32).toString('hex');
     await q("insert into admin_sessions (token, expires_at) values ($1, now() + interval '30 days')", [token]);
     reply.setCookie(COOKIE, token, { path: '/', httpOnly: true, sameSite: 'lax', secure: config.isProd, signed: true, maxAge: 30 * 24 * 3600 });
@@ -158,6 +183,8 @@ export default async function adminRoutes(app: FastifyInstance) {
       integrations: lines(str(b, 'integrations'), 10, 40, true), starting_price: cleanLine(str(b, 'starting_price'), 60) || null,
       free_tier: free === 'yes' ? true : free === 'no' ? false : null, trial_days: Number.isFinite(trial) && trial >= 0 && trial <= 365 ? trial : null,
       deployment: cleanLine(str(b, 'deployment'), 20) || null, company_size: multi(b['company_size']), verdict_line: cleanLine(str(b, 'verdict_line'), 160) || null,
+      deal_text: cleanLine(str(b, 'deal_text'), 120) || null, deal_code: cleanLine(str(b, 'deal_code'), 40) || null, deal_url: cleanLine(str(b, 'deal_url'), 300) || null,
+      deal_until: /^\d{4}-\d{2}-\d{2}$/.test(str(b, 'deal_until')) ? str(b, 'deal_until') : null,
     };
     const checked = str(b, 'action') === 'verified';
     await saveComparisonFields(id, t.vertical, f, checked);
@@ -186,9 +213,11 @@ export default async function adminRoutes(app: FastifyInstance) {
     if (!t) return reply.code(404).send('Not found');
     const problems: string[] = [];
     if (!isValidCategory(t.vertical, t.category)) problems.push(`pick a real subcategory (currently "${t.category}")`);
-    if (t.body_md.trim().length < 100) problems.push('the review body is too short');
+    // A basic (free) profile publishes with the card fields and a short "what it does" paragraph; the full profile needs the whole review.
+    const basic = t.profile_tier === 'basic' && t.plan !== 'featured';
+    if (t.body_md.trim().length < (basic ? 40 : 100)) problems.push(basic ? 'the "what it does" paragraph is too short' : 'the review body is too short');
     if (t.tagline.length < 10) problems.push('the tagline is missing');
-    if (t.listing_complete === false) problems.push('the submitter has not completed the listing yet');
+    if (t.listing_complete === false && !basic) problems.push('the submitter has not completed the listing yet');
     if (problems.length) return go(reply, `/admin/tools/${id}`, `Cannot publish yet: ${problems.join('; ')}.`, true);
     await q("update tools set status = 'published', published_at = coalesce(published_at, now()), reject_reason = null, review_note = null, updated_at = now() where id = $1", [id]);
     await enqueueDeploy(`approved ${t.slug}`);
@@ -407,7 +436,7 @@ function planPill(t: ToolRow): string {
 }
 
 const promptForm = (action: string, field: string, label: string, cls: string, question: string, confirmText?: string) =>
-  `<form method="post" action="${action}" ${confirmText ? `onsubmit="return confirm('${esc(confirmText)}')"` : ''}><input type="hidden" name="${field}" id="${field}-${action.replace(/\W/g, '')}"><button class="btn ${cls}" type="submit" onclick="const v = prompt(${JSON.stringify(question)}, ''); if (v === null) return false; document.getElementById('${field}-${action.replace(/\W/g, '')}').value = v;">${label}</button></form>`;
+  `<form method="post" action="${action}" ${confirmText ? `onsubmit="return confirm('${esc(confirmText)}')"` : ''}><input type="hidden" name="${field}" id="${field}-${action.replace(/\W/g, '')}"><button class="btn ${cls}" type="submit" onclick="const v = prompt(${esc(JSON.stringify(question))}, ''); if (v === null) return false; document.getElementById('${field}-${action.replace(/\W/g, '')}').value = v;">${label}</button></form>`;
 
 function submitterBox(kind: 'tool' | 'post', row: { submitter_name: string | null; submitter_email: string | null; edit_token: string | null; review_note: string | null; notes: string | null }): string {
   return `<div class="card" style="margin-top:1rem"><h2 style="margin-top:0">Submitter</h2>
@@ -421,7 +450,7 @@ function toolPage(t: ToolRow, orders: any[]): string {
   const v = getVertical(t.vertical);
   const cats = [...(v?.categories ?? []), OTHER_CATEGORY];
   const taxonomy = JSON.stringify(Object.fromEntries(VERTICALS.map((x) => [x.slug, x.categories])));
-  const html = marked.parse(t.body_md) as string;
+  const html = renderMarkdown(t.body_md);
   const initial = esc(t.name.charAt(0).toUpperCase());
   const live = t.status === 'published';
   return `
@@ -500,7 +529,7 @@ async function toolNames(slugs: string[]): Promise<Map<string, string>> {
 function comparisonPage(c: ComparisonRow, names: Map<string, string>): string {
   const na = names.get(c.tool_a) ?? c.tool_a;
   const nb = names.get(c.tool_b) ?? c.tool_b;
-  const html = marked.parse(c.verdict_md || '_No verdict written yet._') as string;
+  const html = renderMarkdown(c.verdict_md || '_No verdict written yet._');
   return `
   <p class="meta"><a href="/admin?tab=comparisons">Back</a></p>
   <div class="row" style="justify-content:space-between;margin-bottom:1rem"><h1 style="margin:0">${esc(na)} vs ${esc(nb)} ${statusPill(c.status)}</h1>
@@ -526,7 +555,7 @@ function comparisonPage(c: ComparisonRow, names: Map<string, string>): string {
 }
 
 function postPage(p: PostRow, order: any): string {
-  const html = marked.parse(p.body_md) as string;
+  const html = renderMarkdown(p.body_md);
   const live = p.status === 'published';
   const date = new Date(p.pub_date).toISOString().slice(0, 10);
   return `

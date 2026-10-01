@@ -13,9 +13,21 @@ export type ToolRow = {
   company_size: string[]; verdict_line: string | null; data_checked_at: Date | string | null;
   // false while a paid listing is waiting for the submitter to add the description (pay first, complete later)
   listing_complete: boolean;
+  // basic: free listing with the core fields only. full: description sections present (unlocks sidebar and comparison pages).
+  profile_tier: 'basic' | 'full';
+  // deals rail (migration 007): one live discount per tool, optional
+  deal_text: string | null; deal_code: string | null; deal_url: string | null; deal_until: Date | string | null;
 };
 
-export type ComparisonFields = Pick<ToolRow, 'pros' | 'cons' | 'key_features' | 'platforms' | 'integrations' | 'starting_price' | 'free_tier' | 'trial_days' | 'deployment' | 'company_size' | 'verdict_line'>;
+export type Deal = { text: string; code?: string; url?: string; until?: string };
+/** The live deal for a tool, or undefined when there is none or it has expired. */
+export function liveDeal(t: Pick<ToolRow, 'deal_text' | 'deal_code' | 'deal_url' | 'deal_until'>, now = new Date()): Deal | undefined {
+  if (!t.deal_text) return undefined;
+  if (t.deal_until && new Date(t.deal_until) < new Date(now.toDateString())) return undefined;
+  return { text: t.deal_text, code: t.deal_code ?? undefined, url: t.deal_url ?? undefined, until: t.deal_until ? dateOnly(t.deal_until) : undefined };
+}
+
+export type ComparisonFields = Pick<ToolRow, 'pros' | 'cons' | 'key_features' | 'platforms' | 'integrations' | 'starting_price' | 'free_tier' | 'trial_days' | 'deployment' | 'company_size' | 'verdict_line' | 'deal_text' | 'deal_code' | 'deal_url' | 'deal_until'>;
 
 export const isFeatured = (t: Pick<ToolRow, 'plan' | 'paid_until'>, now = new Date()): boolean =>
   t.plan === 'featured' && !!t.paid_until && new Date(t.paid_until) > now;
@@ -36,6 +48,7 @@ export function toApi(t: ToolRow) {
     featured: isFeatured(t),
     featuredUntil: isFeatured(t) ? t.paid_until : undefined,
     editorsPick: t.editors_pick,
+    profileTier: t.profile_tier ?? 'full',
     thumbnail: t.thumbnail_url ?? undefined,
     addedDate: t.added_at,
     body: t.body_md,
@@ -52,6 +65,7 @@ export function toApi(t: ToolRow) {
     companySize: t.company_size ?? [],
     verdictLine: t.verdict_line ?? undefined,
     dataCheckedAt: t.data_checked_at ? dateOnly(t.data_checked_at) : undefined,
+    deal: liveDeal(t),
   };
 }
 
@@ -69,10 +83,13 @@ export async function saveComparisonFields(toolId: string, vertical: string, f: 
   const platforms = f.platforms.filter((x) => PLATFORMS.includes(x));
   const sizes = f.company_size.filter((x) => (COMPANY_SIZES as readonly string[]).includes(x));
   const deployment = f.deployment && (DEPLOYMENTS as readonly string[]).includes(f.deployment) ? f.deployment : null;
+  const dealUrl = f.deal_url && /^https:\/\/\S+\.\S+/.test(f.deal_url) ? f.deal_url : null;
   await q(
     `update tools set pros=$2, cons=$3, key_features=$4, platforms=$5, integrations=$6, starting_price=$7, free_tier=$8, trial_days=$9, deployment=$10,
-       company_size=$11, verdict_line=$12, data_checked_at=case when $13::boolean then current_date else data_checked_at end, updated_at=now() where id=$1`,
-    [toolId, f.pros, f.cons, features, platforms, f.integrations, f.starting_price, f.free_tier, f.trial_days, deployment, sizes, f.verdict_line, checked],
+       company_size=$11, verdict_line=$12, data_checked_at=case when $13::boolean then current_date else data_checked_at end,
+       deal_text=$14, deal_code=$15, deal_url=$16, deal_until=$17, updated_at=now() where id=$1`,
+    [toolId, f.pros, f.cons, features, platforms, f.integrations, f.starting_price, f.free_tier, f.trial_days, deployment, sizes, f.verdict_line, checked,
+      f.deal_text || null, f.deal_text ? f.deal_code || null : null, f.deal_text ? dealUrl : null, f.deal_text ? f.deal_until || null : null],
   );
 }
 
