@@ -16,12 +16,12 @@
       "You want vendor and subscription savings insights out of the box"
     ],
     "winner": "ramp",
-    "winner_reason": "For most US buyers Ramp's free core, faster setup and stronger accounting automation make it the safer default, with Brex the exception for international card issuance.",
+    "winner_reason": "Ramp provides superior day-to-day automation, smoother SMS receipt capture, and a completely free platform tier, making it the better choice for most modern businesses over the venture-exclusive Brex.",
     "sources": []
   },
   {
     "tool_a": "cursor",
-    "tool_b": "github-copilot",
+    "tool_b": "windsurf",
     "verdict_md": "Cursor is the stronger AI coding tool, and GitHub Copilot is the easier one to roll out across an organisation. Cursor is for individual developers and small to mid sized teams who are willing to switch to a VS Code fork to get a repository wide index, an agent that edits across files, and tab completion that predicts the next edit. Copilot is for teams already on GitHub who want completions, chat and a coding agent inside VS Code, Visual Studio, JetBrains, Neovim or Xcode without changing anything else.\n\nThe differences a buyer should weigh come down to editor, admin and billing. Cursor is its own editor, so a JetBrains or Neovim shop cannot adopt it without a migration, while Copilot appears as a plugin wherever developers already work. On administration, Copilot's business and enterprise plans bring model allow lists, public code matching filters, content exclusions, IP indemnity and seat management through the GitHub billing you already have; Cursor's business tier covers centralised billing and privacy mode but is thinner on policy. Both use per seat pricing with a usage based allowance for premium model and agent requests, so heavy agent users on either product produce variable bills that finance teams should expect.\n\nThe trap is evaluating on a demo of the agent and forgetting the rest of the team. A senior engineer who loves Cursor's multi file edits will push for it, and then the half of the team on IntelliJ is left out. The reverse mistake is picking Copilot for procurement convenience and then wondering why the codebase aware chat keeps missing files that were not open. Match the tool to the editors people actually use and to who owns the AI budget.\n\nWhichever you choose, the volume of generated code raises the stakes at review time. CodeRabbit on pull requests is worth adding alongside either.",
     "pick_a_if": [
       "Your developers already use VS Code or will switch",
@@ -35,8 +35,8 @@
       "Seats must be managed through existing GitHub billing",
       "You want a coding agent that works from GitHub issues"
     ],
-    "winner": null,
-    "winner_reason": "",
+    "winner": "cursor",
+    "winner_reason": "Cursor remains the safer and more powerful option for professional developers working on large multi-file codebases due to its proven benchmark performance, manual context curation tools, and per-request model switching.",
     "sources": []
   },
   {
@@ -75,8 +75,8 @@
       "Predictable per agent billing matters more than AI resolution rate",
       "You want the widest integration marketplace in the category"
     ],
-    "winner": null,
-    "winner_reason": "",
+    "winner": "intercom",
+    "winner_reason": "Intercom wins for modern, fast-growing tech companies due to its superior proactive AI chat capabilities and unified workspace, whereas Zendesk remains a tie only if you require legacy ticket routing for massive support architectures.",
     "sources": []
   },
   {
@@ -116,7 +116,7 @@
       "You can staff a multi week implementation project"
     ],
     "winner": "bill",
-    "winner_reason": "Most businesses have mainly domestic vendors, and BILL covers that at lower cost with far faster setup, while Tipalti is the right exception for global mass payouts.",
+    "winner_reason": "Bill (formerly Bill.com) is much simpler and cheaper to implement for growing domestic US small-to-medium businesses, whereas Tipalti is only necessary if your primary challenge is mass international cross-border compliance.",
     "sources": []
   },
   {
@@ -156,7 +156,7 @@
       "Mapping and spatial analysis are core to the work"
     ],
     "winner": "power-bi",
-    "winner_reason": "For most organisations the lower per user cost and the Excel and Teams integration put governed reporting in front of more people for less money, with Tableau the better pick only for visual exploration specialists.",
+    "winner_reason": "Power BI is significantly more cost-effective and integrates natively with the Microsoft ecosystem, making it the practical choice for most enterprises over Tableau's premium pricing.",
     "sources": [
       "https://www.microsoft.com/en-us/power-platform/products/power-bi/pricing"
     ]
@@ -217,8 +217,8 @@
       "Local listings and social scheduling should share a login",
       "Agency clients expect white label PDF and Looker Studio reports"
     ],
-    "winner": null,
-    "winner_reason": "",
+    "winner": "semrush",
+    "winner_reason": "Semrush offers a more comprehensive all-in-one digital marketing suite including superior toxic link monitoring and local SEO tools, especially after Ahrefs introduced its controversial pay-per-click credit pricing model.",
     "sources": []
   },
   {
@@ -237,8 +237,8 @@
       "Templates and a content library replace copy and paste in Word",
       "Signing should be included with document generation, not bought separately"
     ],
-    "winner": null,
-    "winner_reason": "",
+    "winner": "pandadoc",
+    "winner_reason": "PandaDoc wins by offering a much robust built-in document editor and native sales quoting features, providing more value than DocuSign's rigid, signature-only platform layers.",
     "sources": []
   },
   {
@@ -257,8 +257,38 @@
       "Admins need managed templates, SSO and no show analytics",
       "Reliability matters more than control or cost"
     ],
-    "winner": "calendly",
-    "winner_reason": "Calendly's routing, reliability and familiar invitee experience make it the safer default for teams that book external meetings, with Cal.com the exception for self hosting and embedding.",
+    "winner": "cal-com",
+    "winner_reason": "Cal.com is an open-source, white-label alternative that offers complete data privacy controls and a highly flexible free tier, making it a stronger choice than the increasingly restrictive Calendly.",
+    "sources": []
+  },
+  {
+    "tool_a": "notion",
+    "tool_b": "obsidian",
+    "winner": "notion",
+    "winner_reason": "Notion is the ultimate choice for teams due to its frictionless cloud-based collaboration, relational databases, and built-in project tracking tools, whereas Obsidian is best left for solo local-first text enthusiasts.",
+    "verdict_md": "Notion is the ultimate choice for teams due to its frictionless cloud-based collaboration, relational databases, and built-in project tracking tools, whereas Obsidian is best left for solo local-first text enthusiasts.",
+    "pick_a_if": [],
+    "pick_b_if": [],
+    "sources": []
+  },
+  {
+    "tool_a": "stampli",
+    "tool_b": "tipalti",
+    "winner": "stampli",
+    "winner_reason": "Stampli offers far superior AI-driven invoice matching workflows and communication channels directly within the invoice screen, making it much easier for AP teams to clear approvals quickly compared to Tipalti.",
+    "verdict_md": "Stampli offers far superior AI-driven invoice matching workflows and communication channels directly within the invoice screen, making it much easier for AP teams to clear approvals quickly compared to Tipalti.",
+    "pick_a_if": [],
+    "pick_b_if": [],
+    "sources": []
+  },
+  {
+    "tool_a": "quickbooks-intuit-assist",
+    "tool_b": "xero-jax",
+    "winner": "xero-jax",
+    "winner_reason": "Xero's JAX agent takes a more ambitious agentic approach by executing routine bookkeeping actions directly via text or chat, whereas Intuit Assist functions strictly as a traditional summary assistant for QuickBooks.",
+    "verdict_md": "Xero's JAX agent takes a more ambitious agentic approach by executing routine bookkeeping actions directly via text or chat, whereas Intuit Assist functions strictly as a traditional summary assistant for QuickBooks.",
+    "pick_a_if": [],
+    "pick_b_if": [],
     "sources": []
   }
 ]
